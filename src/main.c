@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include "includes/screens.h"
 
 int main() {
-    printf("Hello, World!");
+    welcomeScreen();
     return 0;
 }
