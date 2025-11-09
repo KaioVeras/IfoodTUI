@@ -33,7 +33,7 @@ void welcomeScreen()
         cadastro();
     break;
     default:
-        system("clear");
+        system("cls");
         printf("Opcao invalida! Tente novamente\n\n");
         welcomeScreen();
         break;

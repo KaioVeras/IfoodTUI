@@ -1,5 +1,6 @@
 # Compilador e flags
 CC = gcc
+WINCC = x86_64-w64-mingw32-gcc
 CFLAGS = -Wall
 
 # Diretórios
@@ -9,20 +10,34 @@ SCREENS_DIR = screens
 # Busca automática de todos os arquivos .c
 SRC_FILES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SCREENS_DIR)/*.c)
 
-# Nome do executável
+# Nomes dos executáveis
 OUT = ifood
+OUT_WIN = ifood.exe
 
-# Regra padrão (compila se houver mudanças)
+# ------------------------------
+# Regras principais
+# ------------------------------
+
+# Compila para Linux
 all: $(OUT)
 
-# Compila automaticamente todos os .c
 $(OUT): $(SRC_FILES)
 	$(CC) $(CFLAGS) $^ -o $@
 
-# Executa o programa (sempre recompila antes)
+# Compila para Windows
+windows: $(OUT_WIN)
+
+$(OUT_WIN): $(SRC_FILES)
+	$(WINCC) $(CFLAGS) $^ -o $@
+
+# Executa no Linux
 run: clean all
 	./$(OUT)
 
-# Remove o executável antigo
+# Executa o .exe pelo Wine (opcional)
+run-win: windows
+	wine $(OUT_WIN)
+
+# Limpa os executáveis
 clean:
-	rm -f $(OUT)
+	rm -f $(OUT) $(OUT_WIN)
