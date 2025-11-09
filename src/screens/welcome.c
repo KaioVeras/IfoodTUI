@@ -25,11 +25,11 @@ void welcomeScreen()
     switch(opcao)
     {
     case 1:
-        system("clear");
+        system("cls");
         login();
     break;
     case 2:
-        system("clear");
+        system("cls");
         cadastro();
     break;
     default:
