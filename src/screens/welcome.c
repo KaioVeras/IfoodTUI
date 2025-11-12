@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include "../includes/screens.h"
 
-void welcomeScreen() 
-{
+void welcomeScreen(void) {
     int  opcao = 0;
 
     printf("==================================================\n");
@@ -24,18 +23,19 @@ void welcomeScreen()
 
     switch(opcao)
     {
-    case 1:
-        system("cls");
-        login();
-    break;
-    case 2:
-        system("cls");
-        cadastro();
-    break;
-    default:
-        system("cls");
-        printf("Opcao invalida! Tente novamente\n\n");
-        welcomeScreen();
-        break;
+	    case 1:
+	        system("cls");
+	        login();
+	    break;
+	    
+	    case 2:
+	        system("cls");
+	        cadastro();
+	    break;
+	    
+	    default:
+	        system("cls");
+	        printf("Opcao invalida! Tente novamente\n\n");
+	        welcomeScreen();
     }
 }

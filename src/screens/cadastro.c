@@ -1,9 +1,14 @@
 #include <stdio.h>
-#include "../includes/screens.h"
+#include "INCLUDES/SCREENS.H"
 
-int cadastro() {
+void cadastro();
+
+int main() {
+	return 0;
+}
+
+void cadastro() {
     printf("==================================================\n");
     printf("                   NOVO CADASTRO                  \n");
     printf("==================================================\n");
-    return 0;
 }
