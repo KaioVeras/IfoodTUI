@@ -12,7 +12,7 @@ Este é um projeto acadêmico para a disciplina de Algoritmos e Programação Es
 - **Bibliotecas:**
 
 ## 🎯 Status do Projeto
-O prjeto está: **Em desenvolvimento** 🚧
+O projeto está: **Em desenvolvimento** 🚧
 
 ## 📂 Estrutura do Projeto
 Consulte o arquivo `ESTRUTURA_PROJETO.md` para uma descrição detalhada de como os arquivos e pastas estão organizados.
