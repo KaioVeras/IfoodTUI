@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include "../includes/screens.h"
 
-void welcomeScreen(void) {
+void welcomeScreen() {
     int  opcao = 0;
 
+    system("cls");
     printf("==================================================\n");
     printf("=                                                =\n");
     printf("=              BEM-VINDO AO IFOOD TUI            =\n");
@@ -23,13 +24,11 @@ void welcomeScreen(void) {
 
     switch(opcao){
         case 1:
-            system("cls");
-            login();
+            cadastro();
         break;
 
         case 2:
-            system("cls");
-            cadastro();
+            login();
         break;
 
         default:
