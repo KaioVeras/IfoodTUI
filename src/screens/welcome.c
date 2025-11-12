@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../includes/screens.h"
+#include "includes/utils.h"
 
 void welcomeScreen() {
     int  opcao = 0;
 
-    system("cls");
+    clearScreen();
     printf("==================================================\n");
     printf("=                                                =\n");
     printf("=              BEM-VINDO AO IFOOD TUI            =\n");
@@ -32,7 +33,7 @@ void welcomeScreen() {
         break;
 
         default:
-            system("cls");
+            clearScreen();
             printf("Opcao invalida! Tente novamente\n\n");
             welcomeScreen();
     }

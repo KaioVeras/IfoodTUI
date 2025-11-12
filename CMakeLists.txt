@@ -9,6 +9,7 @@ add_executable(IfoodTUI
         src/screens/cadastro.c
         src/screens/login.c
         src/screens/welcome.c
+        src/utils/clear.c
 )
 
 # 2. Diga ao seu executável onde procurar os headers (.h)

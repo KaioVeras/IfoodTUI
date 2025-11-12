@@ -2,11 +2,10 @@
 #include <stdlib.h>
 #include "../includes/screens.h"
 #include "../includes/user.h"
+#include  "../includes/utils.h"
 
 void login(User usuario) {
-
-
-    system("cls");
+    clearScreen();
     printf("==================================================\n");
     printf("                      LOGIN                       \n");
     printf("==================================================\n");
