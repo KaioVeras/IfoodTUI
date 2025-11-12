@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include "../includes/screens.h"
 
-int login() {
+void login(void) {
     printf("==================================================\n");
     printf("                      LOGIN                       \n");
     printf("==================================================\n");
-    return 0;
 }

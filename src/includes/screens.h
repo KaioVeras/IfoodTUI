@@ -2,7 +2,7 @@
 #define SCREENS_H
 
 void welcomeScreen(void);
-int login();
+void login(void);
 int cadastro();
 
 #endif // SCREENS_H

@@ -21,20 +21,20 @@ void welcomeScreen(void) {
     printf("Selecione uma opcao (1-2): ");
     scanf("%d", &opcao);
 
-    switch(opcao)
-    {
+    switch(opcao){
         case 1:
-            system("clear");
+            system("cls");
             login();
-            break;
+        break;
+
         case 2:
-            system("clear");
+            system("cls");
             cadastro();
-            break;
+        break;
+
         default:
-            system("clear");
+            system("cls");
             printf("Opcao invalida! Tente novamente\n\n");
             welcomeScreen();
-            break;
     }
 }
