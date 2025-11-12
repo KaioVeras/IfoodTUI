@@ -23,19 +23,18 @@ void welcomeScreen(void) {
 
     switch(opcao)
     {
-	    case 1:
-	        system("cls");
-	        login();
-	    break;
-	    
-	    case 2:
-	        system("cls");
-	        cadastro();
-	    break;
-	    
-	    default:
-	        system("cls");
-	        printf("Opcao invalida! Tente novamente\n\n");
-	        welcomeScreen();
+        case 1:
+            system("clear");
+            login();
+            break;
+        case 2:
+            system("clear");
+            cadastro();
+            break;
+        default:
+            system("clear");
+            printf("Opcao invalida! Tente novamente\n\n");
+            welcomeScreen();
+            break;
     }
 }

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include "../includes/screens.h"
 
-int cadastro() {
+int login() {
     printf("==================================================\n");
-    printf("                   NOVO CADASTRO                  \n");
+    printf("                      LOGIN                       \n");
     printf("==================================================\n");
     return 0;
 }
