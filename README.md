@@ -21,6 +21,10 @@ Consulte o arquivo `ESTRUTURA_PROJETO.md` para uma descrição detalhada de como
 
 Aqui está o backlog das funcionalidades que vamos implementar.
 
+Módulo Extra
+Catalogo do Restaurante
+SIstema de Fidelidade (Restaurante)
+
 Essenciais (MVP)
 
 [x] Autenticação (Login/Cadastro)
