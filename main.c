@@ -74,6 +74,7 @@ int main()
             else
             {
                 cadastro(&cliente);
+                le_valida_verificacao(&cliente);
             }
             break;
 
@@ -90,9 +91,9 @@ int main()
             {
                 logar(&cliente);
 
-                le_valida_verificacao(&cliente);
-
-                endereco(&cliente.end);
+                if(strlen(cliente.nome) == 0) {
+                    endereco(&cliente.end);
+                }
 
                 tipo = menu_tipo();
 
@@ -316,10 +317,24 @@ int testecodigo(struct Cliente *cliente)
     return 0;
 }
 
+int gerar_codigo(){
+	
+	int tamanho = 1;
+	int numeros[tamanho];
+	int i = 0;
+	
+	srand(time(NULL));
+	
+	numeros[i] = rand() % 99999;
+
+	return numeros[i];
+}
+
 int le_valida_verificacao(struct Cliente *cliente)
 {
 
-    int codigo_correto = 12345;
+    int codigo_correto = 0;
+    codigo_correto = gerar_codigo();
     int codigo_inserido = 0;
 
     code_ui(cliente);
