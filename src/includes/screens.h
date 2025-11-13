@@ -3,6 +3,6 @@
 
 void welcomeScreen();
 void login();
-int cadastro();
+void cadastro();
 
 #endif // SCREENS_H

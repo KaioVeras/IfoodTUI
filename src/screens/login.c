@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "../includes/screens.h"
 #include "../includes/user.h"
 #include  "../includes/utils.h"
@@ -10,6 +9,12 @@ void login(User usuario) {
     printf("                      LOGIN                       \n");
     printf("==================================================\n");
 
-    printf("Informe o nome do login: ");
-    scanf(" %s",&usuario.nome);
+    printf("Informe o Nome do Conta: ");
+    scanf(" %[^\n]s",&usuario.nome);
+
+    printf("Informe o E-mail da Conta: ");
+    scanf(" %s",&usuario.email);
+
+    printf("Informe a Senha da Conta: ");
+    scanf(" %s",&usuario.senha);
 }
