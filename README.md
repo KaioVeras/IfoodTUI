@@ -23,11 +23,11 @@ Aqui está o backlog das funcionalidades que vamos implementar.
 
 Essenciais (MVP)
 
-[ ] Autenticação (Login/Cadastro)
+[x] Autenticação (Login/Cadastro)
 
-[ ] Login de Cliente
+[x] Login de Cliente
 
-[ ] Cadastro de Cliente
+[x] Cadastro de Cliente
 
 [ ] Login de Restaurante
 
@@ -57,7 +57,7 @@ Essenciais (MVP)
 
 [ ] Visualizar carrinho
 
-[ ] Selecionar endereço
+[x] Selecionar endereço
 
 [ ] Selecionar forma de pagamento (ex: Pix, Dinheiro)
 

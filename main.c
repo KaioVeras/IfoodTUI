@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <locale.h>
+#include <windows.h>
+#include <io.h>
+#include <fcntl.h>
+
 
 struct Endereco
 {
@@ -30,6 +35,7 @@ void code_ui(struct Cliente *cliente);
 void login_error_ui();
 void endereco_ui();
 void modo_cliente_ui();
+void configurarAcentuacao();
 
 int menu(int opcao);
 int menu_tipo();
@@ -40,6 +46,8 @@ int endereco(struct Endereco *end);
 
 int main()
 {
+    configurarAcentuacao();
+
     struct Cliente cliente;
     int opcao = 0, tipo = 0;
 
@@ -293,22 +301,6 @@ int endereco(struct Endereco *end)
     return 0;
 }
 
-void clearScreen()
-{
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-}
-
-void limparBuffer()
-{
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF)
-        ;
-}
-
 int testecodigo(struct Cliente *cliente)
 {
 
@@ -360,6 +352,44 @@ int le_valida_verificacao(struct Cliente *cliente)
     } while (!(codigo_inserido == codigo_correto));
 
     return 0;
+}
+
+void clearScreen()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+void limparBuffer()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+        ;
+}
+
+void configurarAcentuacao()
+{
+   #ifdef _WIN32
+    // Habilita suporte a UTF-8 no console do Windows
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    
+    // // Habilita sequências de escape ANSI no Windows 10+
+    // HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    // DWORD dwMode = 0;
+    // GetConsoleMode(hOut, &dwMode);
+    // dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    // SetConsoleMode(hOut, dwMode);
+    
+    // Configura locale para UTF-8
+    setlocale(LC_ALL, ".UTF8");
+#else
+    // Para Linux/Mac, configura locale para UTF-8
+    setlocale(LC_ALL, "");
+#endif
 }
 
 void menu_ui()
