@@ -17,17 +17,20 @@ O projeto está: **Em desenvolvimento** 🚧
 ## 📂 Estrutura do Projeto
 Consulte o arquivo `ESTRUTURA_PROJETO.md` para uma descrição detalhada de como os arquivos e pastas estão organizados.
 
-## ✨ Funcionalidades (Features)
+## Módulo Extra
+- Catalogo do Restaurante
+- SIstema de Fidelidade (Restaurante)
 
+## ✨ Funcionalidades (Features)
 Aqui está o backlog das funcionalidades que vamos implementar.
 
-Essenciais (MVP)
+### Essenciais (MVP)
 
-[x] Autenticação (Login/Cadastro)
+[✅] Autenticação (Login/Cadastro)
 
-[x] Login de Cliente
+[✅] Login de Cliente
 
-[x] Cadastro de Cliente
+[✅] Cadastro de Cliente
 
 [ ] Login de Restaurante
 
@@ -57,7 +60,7 @@ Essenciais (MVP)
 
 [ ] Visualizar carrinho
 
-[x] Selecionar endereço
+[✅] Selecionar endereço
 
 [ ] Selecionar forma de pagamento (ex: Pix, Dinheiro)
 
