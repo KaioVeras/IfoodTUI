@@ -22,7 +22,7 @@ void cadastro(User usuario) {
     scanf(" %s",&usuario.telefone);
 
     printf("Informe o endereco da conta (Logradouro): ");
-    scanf(" %s",&usuario.endereco.logradouro);
+    scanf(" %[^\n]s",&usuario.endereco.logradouro);
 
     printf("Informe o endereco da conta (Numero): ");
     printf("%d",&usuario.endereco.numero);
