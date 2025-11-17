@@ -3,10 +3,13 @@
 #include <string.h>
 #include <ctype.h>
 #include <locale.h>
+#include <time.h>
+
+#ifdef _WIN32
 #include <windows.h>
 #include <io.h>
 #include <fcntl.h>
-
+#endif
 
 struct Endereco
 {
@@ -91,7 +94,8 @@ int main()
             {
                 logar(&cliente);
 
-                if(strlen(cliente.nome) == 0) {
+                if (strlen(cliente.nome) == 0)
+                {
                     endereco(&cliente.end);
                 }
 
@@ -278,7 +282,7 @@ int logar(struct Cliente *cliente)
 int endereco(struct Endereco *end)
 {
     endereco_ui();
-    
+
     printf("Digite o endereco: ");
     scanf(" %19[^\n]", end->endereco);
 
@@ -317,17 +321,18 @@ int testecodigo(struct Cliente *cliente)
     return 0;
 }
 
-int gerar_codigo(){
-	
-	int tamanho = 1;
-	int numeros[tamanho];
-	int i = 0;
-	
-	srand(time(NULL));
-	
-	numeros[i] = rand() % 99999;
+int gerar_codigo()
+{
 
-	return numeros[i];
+    int tamanho = 1;
+    int numeros[tamanho];
+    int i = 0;
+
+    srand(time(NULL));
+
+    numeros[i] = rand() % 99999;
+
+    return numeros[i];
 }
 
 int le_valida_verificacao(struct Cliente *cliente)
@@ -387,18 +392,18 @@ void limparBuffer()
 
 void configurarAcentuacao()
 {
-   #ifdef _WIN32
+#ifdef _WIN32
     // Habilita suporte a UTF-8 no console do Windows
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-    
+
     // // Habilita sequências de escape ANSI no Windows 10+
     // HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     // DWORD dwMode = 0;
     // GetConsoleMode(hOut, &dwMode);
     // dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
     // SetConsoleMode(hOut, dwMode);
-    
+
     // Configura locale para UTF-8
     setlocale(LC_ALL, ".UTF8");
 #else
@@ -488,7 +493,8 @@ void endereco_ui()
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void modo_cliente_ui() {
+void modo_cliente_ui()
+{
     clearScreen();
     printf("+-------------------------------------------------------------------------+\n");
     printf("|                                                                         |\n");
