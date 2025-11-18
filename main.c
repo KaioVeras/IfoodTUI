@@ -40,6 +40,9 @@ void limparBuffer();
 void code_ui(struct Cliente *cliente);
 void login_error_ui();
 void endereco_ui();
+void home_cliente_ui();
+void pedidos_cliente_ui();
+void perfil_cliente_ui(struct Cliente *cliente);
 void modo_cliente_ui(struct Cliente *cliente);
 void modo_entregador_ui(struct Cliente *cliente);
 void modo_restaurante_ui(struct Cliente *cliente);
@@ -49,6 +52,8 @@ void configurarAcentuacao();
 /// Protótipos das Funcoes
 int menu(int opcao);
 int menu_tipo();
+int menu_cliente();
+int menu_restaurante();
 int cadastro(struct Cliente *cliente);
 int logar(struct Cliente *cliente);
 int le_valida_verificacao(struct Cliente *cliente);
@@ -102,7 +107,8 @@ int main()
             else
             {
                 logar(&cliente);
-
+                
+                tipo = 0;
                 tipo = menu_tipo();
 
                 switch (tipo)
@@ -110,7 +116,33 @@ int main()
                 case 1:
                     modo_cliente_ui(&cliente);
                     limparBuffer();
-                    getchar();
+
+                    tipo = 0;
+                    tipo = menu_cliente();
+                    
+                    switch(tipo){
+                        case 1:
+                            home_cliente_ui();
+                            limparBuffer();
+                            getchar();
+                        break;
+
+                        case 2:
+                            pedidos_cliente_ui();
+                            limparBuffer();
+                            getchar();
+                        break;
+
+                        case 3:
+                            perfil_cliente_ui(&cliente);
+                            limparBuffer();
+                            getchar();
+                        break;
+
+                        case 4:
+                            
+                        break;
+                    }
                     break;
 
                 case 2:
@@ -122,7 +154,40 @@ int main()
                 case 3:
                     modo_restaurante_ui(&cliente);
                     limparBuffer();
-                    getchar();
+                  
+                    tipo = 0;
+                    tipo = menu_restaurante();
+
+                    switch(tipo) {
+                        case 1:
+                            printf("Dashboard");
+                            limparBuffer();
+                            getchar();
+                        break;
+
+                        case 2:
+                            printf("Pedidos");
+                            limparBuffer();
+                            getchar();
+                        break;
+
+                        case 3:
+                            printf("Perfil");
+                            limparBuffer();
+                            getchar();
+                        break;
+
+                        case 4:
+                            printf("Configurações");
+                            limparBuffer();
+                            getchar();
+                        break;
+
+                        case 5:
+            
+                        break;
+                    }
+
                     break;
 
                 case 4:
@@ -142,7 +207,6 @@ int main()
             printf("Opcao invalida, tente novamente\n");
         }
     } while (opcao != 3);
-
     return 0;
 }
 
@@ -200,6 +264,63 @@ int menu_tipo()
         }
         cont++;
     } while (tipo != 1 && tipo != 2 && tipo != 3 && tipo != 4);
+
+    return tipo;
+}
+
+// Função do menu do cliente
+int menu_cliente(){
+    int cont = 0;
+    int tipo = 0;
+
+    printf("[1] >> Home\n");
+    printf("[2] >> Pedidos\n");
+    printf("[3] >> Perfil\n\n");
+    printf("[4] >> Voltar\n");
+
+    do
+    {
+        if (cont > 0)
+        {
+            printf("Opcao invalida! Tente novamente: ");
+        }
+        printf("Entre o numero desejado: ");
+        if (scanf("%d", &tipo) != 1)
+        {
+            limparBuffer();
+            tipo = 0;
+        }
+        cont++;
+    } while (tipo != 1 && tipo != 2 && tipo != 3 && tipo != 4);
+
+    return tipo;
+}
+
+// Função do menu do restaurante
+int menu_restaurante() {
+    int cont = 0;
+    int tipo = 0;
+
+    printf("[1] >> Dashboard\n");
+    printf("[2] >> Pedidos\n");
+    printf("[3] >> Perfil\n");
+    printf("[4] >> Configurações\n\n");
+    printf("[5] >> Voltar\n");
+
+    do
+    {
+        if (cont > 0)
+        {
+            printf("Opcao invalida! Tente novamente: ");
+        }
+        printf("Entre o numero desejado: ");
+        if (scanf("%d", &tipo) != 1)
+        {
+            limparBuffer();
+            tipo = 0;
+        }
+        cont++;
+    } while (tipo != 1 && tipo != 2 && tipo != 3 && tipo != 4 && tipo != 5);
 
     return tipo;
 }
@@ -395,11 +516,11 @@ void configurarAcentuacao()
     SetConsoleCP(CP_UTF8);
 
     // Habilita sequências de escape ANSI no Windows 10+
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD dwMode = 0;
-    GetConsoleMode(hOut, &dwMode);
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(hOut, dwMode);
+    // HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    // DWORD dwMode = 0;
+    // GetConsoleMode(hOut, &dwMode);
+    // dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    // SetConsoleMode(hOut, dwMode);
 
     // Configura locale para UTF-8
     setlocale(LC_ALL, ".UTF8");
@@ -474,7 +595,7 @@ void code_ui(struct Cliente *cliente)
     printf("|                 V E R I F I C A Ç Ã O   D E   C Ó D I G O               |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
-    printf("     Para finalizar seu cadastro, enviamos um código de verificação para:    \n\n");
+    printf("     Para finalizar seu cadastro, enviamos um código de verificação para:  \n\n");
     printf("     E-mail: %s\n\n", cliente->email);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
@@ -512,7 +633,7 @@ void modo_cliente_ui(struct Cliente *cliente)
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
     printf("                         O que você deseja fazer?\n");
-    printf("                    %s, %s, %d, CEP: %s  \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+    printf("                Endereço: %s, %s, %d, CEP: %s  \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
@@ -525,7 +646,7 @@ void modo_entregador_ui(struct Cliente *cliente)
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
     printf("                         O que você deseja fazer?\n\n");
-    printf("                    %s, %s, %d, CEP: %s  \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+    printf("                  Endereço: %s, %s, %d, CEP: %s  \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
@@ -538,6 +659,39 @@ void modo_restaurante_ui(struct Cliente *cliente)
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
     printf("                         O que você deseja fazer?\n\n");
-    printf("                    %s, %s, %d, CEP: %s  \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+    printf("                 Endereço: %s, %s, %d, CEP: %s  \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+    printf("  +---------------------------------------------------------------------+  \n\n");
+}
+
+void home_cliente_ui(){
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|                                H O M E                                  |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+    printf("                         O que você deseja fazer?\n\n");
+    printf("  +---------------------------------------------------------------------+  \n\n");
+}
+
+void pedidos_cliente_ui(){
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|                      P E D I D O S   C L I E N T E                      |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+    printf("                         Seus pedidos recentes:\n\n");
+    printf("  +---------------------------------------------------------------------+  \n\n");
+}
+
+void perfil_cliente_ui(struct Cliente *cliente){
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|                       P E R F I L   D O   C L I E N T E                 |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+    printf("                 Nome do Perfil:%s | Email:%s\n\n", cliente->nome, cliente->email);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
