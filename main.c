@@ -5,12 +5,14 @@
 #include <locale.h>
 #include <time.h>
 
+// Inclusão de bibliotecas específicas para Windows
 #ifdef _WIN32
     #include <windows.h>
     #include <io.h>
     #include <fcntl.h>
 #endif
 
+// Definição das Structs
 struct Endereco
 {
     char endereco[20];
@@ -29,6 +31,7 @@ struct Cliente
     char senha[20];
 };
 
+// Protótipos dos Procedimentso
 void menu_ui();
 void login_ui();
 void cadastro_ui();
@@ -37,9 +40,12 @@ void limparBuffer();
 void code_ui(struct Cliente *cliente);
 void login_error_ui();
 void endereco_ui();
-void modo_cliente_ui();
+void modo_cliente_ui(struct Cliente *cliente);
+void modo_entregador_ui();
+void modo_restaurante_ui();
 void configurarAcentuacao();
 
+/// Protótipos das Funções
 int menu(int opcao);
 int menu_tipo();
 int cadastro(struct Cliente *cliente);
@@ -50,6 +56,7 @@ int endereco(struct Endereco *end);
 int main()
 {
     configurarAcentuacao();
+    srand(time(NULL)); // Inicializa o gerador de números aleatórios
 
     struct Cliente cliente;
     int opcao = 0, tipo = 0;
@@ -77,6 +84,7 @@ int main()
             else
             {
                 cadastro(&cliente);
+                endereco(&cliente.end);
                 le_valida_verificacao(&cliente);
             }
             break;
@@ -94,12 +102,7 @@ int main()
             {
                 logar(&cliente);
 
-                if (strlen(cliente.nome) == 0)
-                {
-                    endereco(&cliente.end);
-                }
-
-                tipo = menu_tipo();
+                tipo = menu_tipo(&cliente);
 
                 switch (tipo)
                 {
@@ -149,7 +152,7 @@ int main()
     return 0;
 }
 
-// Função do menu
+// Função do menu inicial
 int menu(int opcao)
 {
     int cont = 0;
@@ -176,12 +179,13 @@ int menu(int opcao)
     return opcao;
 }
 
-int menu_tipo()
+// Função do menu do tipo de usuário
+int menu_tipo(struct Cliente *cliente)
 {
     int cont = 0;
     int tipo = 0;
 
-    modo_cliente_ui();
+    modo_cliente_ui(&cliente);
 
     printf("[1] >> Cliente\n");
     printf("[2] >> Entregador\n");
@@ -250,6 +254,7 @@ int cadastro(struct Cliente *cliente)
     return 0;
 }
 
+// Função de login
 int logar(struct Cliente *cliente)
 {
     char email[50];
@@ -279,6 +284,7 @@ int logar(struct Cliente *cliente)
     return 0;
 }
 
+// Função de endereço
 int endereco(struct Endereco *end)
 {
     endereco_ui();
@@ -306,6 +312,7 @@ int endereco(struct Endereco *end)
     return 0;
 }
 
+// Função de teste de código
 int testecodigo(struct Cliente *cliente)
 {
 
@@ -321,47 +328,40 @@ int testecodigo(struct Cliente *cliente)
     return 0;
 }
 
+// Função para gerar código aleatório
 int gerar_codigo()
 {
+    int codigo;
 
-    int tamanho = 1;
-    int numeros[tamanho];
-    int i = 0;
+    // Gera um número aleatório de 5 dígitos (100000 a 999999)
+    codigo = 100000 + (rand() % 900000);
 
-    srand(time(NULL));
-
-    numeros[i] = rand() % 99999;
-
-    return numeros[i];
+    return codigo;
 }
 
+// Função para ler e validar o código
 int le_valida_verificacao(struct Cliente *cliente)
 {
-
     int codigo_correto = 0;
     codigo_correto = gerar_codigo();
     int codigo_inserido = 0;
-
+    
     code_ui(cliente);
     printf("Insira o código (%d): ", codigo_correto);
-    if (scanf("%d", &codigo_inserido) != 1)
-    {
+    
+    if (scanf("%d", &codigo_inserido) != 1){
         limparBuffer();
         codigo_inserido = 0;
     }
 
-    do
-    {
-        if (codigo_inserido == codigo_correto)
-        {
+    do{
+        if (codigo_inserido == codigo_correto){
             printf("\nCódigo validado com sucesso.\n");
             printf(">> Pressione ENTER para continuar...");
             limparBuffer();
             getchar();
             break;
-        }
-        else
-        {
+        } else{
             printf("Código Inválido! Tente novamente (%d): ", codigo_correto);
             if (scanf("%d", &codigo_inserido) != 1)
             {
@@ -374,6 +374,7 @@ int le_valida_verificacao(struct Cliente *cliente)
     return 0;
 }
 
+// Procedimento para limpar a tela de acordo com o sistema operacional
 void clearScreen()
 {
 #ifdef _WIN32
@@ -383,6 +384,7 @@ void clearScreen()
 #endif
 }
 
+// Procedimento para limpar o buffer do teclado
 void limparBuffer()
 {
     int c;
@@ -390,19 +392,13 @@ void limparBuffer()
         ;
 }
 
+// Procedimento para configurar a acentuação
 void configurarAcentuacao()
 {
 #ifdef _WIN32
     // Habilita suporte a UTF-8 no console do Windows
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
-
-    // // Habilita sequências de escape ANSI no Windows 10+
-    // HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    // DWORD dwMode = 0;
-    // GetConsoleMode(hOut, &dwMode);
-    // dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    // SetConsoleMode(hOut, dwMode);
 
     // Configura locale para UTF-8
     setlocale(LC_ALL, ".UTF8");
@@ -412,6 +408,7 @@ void configurarAcentuacao()
 #endif
 }
 
+// Procedimentos de Interface do Usuário (UI)
 void menu_ui()
 {
     clearScreen();
@@ -476,7 +473,7 @@ void code_ui(struct Cliente *cliente)
     printf("|                 V E R I F I C A Ç Ã O   D E   C Ó D I G O               |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
-    printf("     Para finalizar seu cadastro, enviamos um código de 6 dígitos para:    \n\n");
+    printf("     Para finalizar seu cadastro, enviamos um código de 5 dígitos para:    \n\n");
     printf("     E-mail: %s\n\n", cliente->email);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
@@ -493,12 +490,37 @@ void endereco_ui()
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void modo_cliente_ui()
+void modo_cliente_ui(struct Cliente *cliente)
 {
     clearScreen();
     printf("+-------------------------------------------------------------------------+\n");
     printf("|                                                                         |\n");
     printf("|                         M O D O   C L I E N T E                         |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+    printf("                         O que você deseja fazer?\n\n");
+    printf("  +---------------------------------------------------------------------+  \n\n");
+    printf("Endereço cadastrado: %s, %s, %d, CEP: %s\n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+}
+
+void modo_entregador_ui()
+{
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|                       M O D O   E N T R E G A D O R                     |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+    printf("                         O que você deseja fazer?\n\n");
+    printf("  +---------------------------------------------------------------------+  \n\n");
+}
+
+void modo_restaurante_ui()
+{
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|                       M O D O   R E S T A U R A N T E                   |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
     printf("                         O que você deseja fazer?\n\n");
