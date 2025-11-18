@@ -47,7 +47,7 @@ void configurarAcentuacao();
 
 /// Protótipos das Funcoes
 int menu(int opcao);
-int menu_tipo();
+int menu_tipo(struct Cliente *cliente);
 int cadastro(struct Cliente *cliente);
 int logar(struct Cliente *cliente);
 int le_valida_verificacao(struct Cliente *cliente);
