@@ -45,9 +45,9 @@ void modo_entregador_ui();
 void modo_restaurante_ui();
 void configurarAcentuacao();
 
-/// Protótipos das Funções
+/// Protótipos das Funcoes
 int menu(int opcao);
-int menu_tipo(struct Cliente *cliente);
+int menu_tipo();
 int cadastro(struct Cliente *cliente);
 int logar(struct Cliente *cliente);
 int le_valida_verificacao(struct Cliente *cliente);
@@ -367,7 +367,7 @@ int le_valida_verificacao(struct Cliente *cliente)
             {
                 limparBuffer();
                 codigo_inserido = 0;
-            }
+            } 
         }
     } while (!(codigo_inserido == codigo_correto));
 
@@ -473,7 +473,7 @@ void code_ui(struct Cliente *cliente)
     printf("|                 V E R I F I C A Ç Ã O   D E   C Ó D I G O               |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
-    printf("     Para finalizar seu cadastro, enviamos um código de 5 dígitos para:    \n\n");
+    printf("     Para finalizar seu cadastro, enviamos um código de verificação para:    \n\n");
     printf("     E-mail: %s\n\n", cliente->email);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
