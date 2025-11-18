@@ -6,9 +6,9 @@
 #include <time.h>
 
 #ifdef _WIN32
-#include <windows.h>
-#include <io.h>
-#include <fcntl.h>
+    #include <windows.h>
+    #include <io.h>
+    #include <fcntl.h>
 #endif
 
 struct Endereco
