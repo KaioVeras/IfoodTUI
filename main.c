@@ -92,6 +92,7 @@ int menu_perfil_cliente();
 int menu_editar_perfil_cliente();
 int cadastro(struct Cliente *cliente);
 int cadastro_restaurante(struct Cliente *cliente);
+int cadastro_entregador(struct Cliente *cliente);
 int logar(struct Cliente *cliente);
 int le_valida_verificacao(struct Cliente *cliente);
 int endereco(struct Endereco *end);
