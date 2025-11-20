@@ -26,7 +26,7 @@ struct Entregador
     char cpf[11];
     char tipo_veiculo[10];
     char placa[8];
-    int idade
+    int idade;
 };
 
 struct Restaurante
@@ -38,6 +38,8 @@ struct Restaurante
     char cnpj[18];
     char horario_abertura[6];
     char horario_fechamento[6];
+    char horario_abertura_fds[6];
+    char horario_fechamento_fds[6];
     char status;
     int cadastrado;
 };
@@ -51,7 +53,7 @@ struct Cliente
     char email[20];
     char telefone[20];
     char senha[20];
-    int cadastro
+    int cadastro;
 };
 
 // Protótipos dos Procedimentos
@@ -81,6 +83,7 @@ void horario_funcionamento_ui(struct Cliente *cliente);
 void dados_restaurante_ui();
 void cadastro_restaurante_ui();
 void dados_gerais_restaurante_ui(struct Cliente *cliente);
+void login_nao_cadastrado_ui();
 
 /// Protótipos das Funções
 int menu(int opcao);
@@ -92,11 +95,10 @@ int menu_perfil_cliente();
 int menu_editar_perfil_cliente();
 int cadastro(struct Cliente *cliente);
 int cadastro_restaurante(struct Cliente *cliente);
-int cadastro_entregador(struct Cliente *cliente);
+int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente);
 int logar(struct Cliente *cliente);
 int le_valida_verificacao(struct Cliente *cliente);
 int endereco(struct Endereco *end);
-int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente);
 
 int main()
 {
@@ -125,7 +127,7 @@ int main()
             if (strlen(cliente.nome) != 0)
             {
                 clearScreen();
-                printf("Usuario ja cadastrado! Tente logar.\n");
+                printf("Usuário já cadastrado! Tente logar.\n");
                 printf("\nPressione ENTER para continuar...");
                 limparBuffer();
                 getchar();
@@ -142,7 +144,7 @@ int main()
             if (strlen(cliente.nome) == 0)
             {
                 clearScreen();
-                printf("Nenhum usuario cadastrado! Cadastre-se primeiro.\n");
+                login_nao_cadastrado_ui();
                 printf("\nPressione ENTER para continuar...");
                 limparBuffer();
                 getchar();
@@ -353,6 +355,13 @@ int main()
                                     switch (tipo)
                                     {
                                     case 1:
+                                        dados_restaurante_ui();
+                                        dados_gerais_restaurante_ui(&cliente);
+                                        limparBuffer();
+                                        getchar();
+                                        break;
+
+                                    case 2:
                                         status_restaurante_ui(&cliente);
 
                                         char resposta;
@@ -407,13 +416,6 @@ int main()
 
                                         break;
 
-                                    case 2:
-                                        dados_restaurante_ui();
-                                        dados_gerais_restaurante_ui(&cliente);
-                                        limparBuffer();
-                                        getchar();
-                                        break;
-
                                     case 3:
                                         horario_funcionamento_ui(&cliente);
                                         limparBuffer();
@@ -421,7 +423,8 @@ int main()
                                         break;
 
                                     case 4:
-
+                                        clearScreen();
+                                        modo_restaurante_ui(&cliente);
                                         break;
 
                                     default:
@@ -651,9 +654,10 @@ int menu_configuracoes_restaurante(struct Cliente *cliente)
     int cont = 0;
     int tipo = 0;
 
-    printf("[1] >> Status do Restaurante\n");
-    printf("[2] >> Dados do Restaurante\n");
+    printf("[1] >> Dados do Restaurante\n");
+    printf("[2] >> Status do Restaurante\n");
     printf("[3] >> Horários de Funcionamento\n\n");
+
     printf("[4] >> Voltar\n");
 
     do
@@ -685,6 +689,8 @@ int cadastro_restaurante(struct Cliente *cliente)
     char cnpj[18];
     char abertura[6];
     char fechamento[6];
+    char abertura_fds[6];
+    char fechamento_fds[6];
 
     cadastro_restaurante_ui();
 
@@ -716,11 +722,17 @@ int cadastro_restaurante(struct Cliente *cliente)
     printf("Digite o CNPJ: ");
     scanf(" %s", cnpj);
 
-    printf("Digite o horário de abertura (HH:MM): ");
+    printf("Digite o horário de abertura semana (HH:MM): ");
     scanf(" %s", abertura);
 
-    printf("Digite o horário de fechamento (HH:MM): ");
+    printf("Digite o horário de fechamento semana(HH:MM): ");
     scanf(" %s", fechamento);
+
+    printf("Digite o horário de abertura fim de semana (HH:MM): ");
+    scanf(" %s", abertura_fds);
+
+    printf("Digite o horário de fechamento fim de semana (HH:MM): ");
+    scanf(" %s", fechamento_fds);
 
     strcpy(cliente->rest.nome_restaurante, nome);
     strcpy(cliente->rest.tipo_culinaria, tipo);
@@ -728,6 +740,8 @@ int cadastro_restaurante(struct Cliente *cliente)
     strcpy(cliente->rest.cnpj, cnpj);
     strcpy(cliente->rest.horario_abertura, abertura);
     strcpy(cliente->rest.horario_fechamento, fechamento);
+    strcpy(cliente->rest.horario_abertura_fds, abertura_fds);
+    strcpy(cliente->rest.horario_fechamento_fds, fechamento_fds);
     cliente->rest.status = 'a';
     cliente->rest.cadastrado = 1;
 
@@ -789,7 +803,7 @@ int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente)
     char placa[8];
     int idade = 0;
     char cpf[11];
-    modo_entregador_ui(&cliente);
+    modo_entregador_ui(cliente);
 
     printf("Insira seu CPF: ");
     scanf("%[^\n]s", cpf);
@@ -1135,7 +1149,7 @@ void modo_restaurante_ui(struct Cliente *cliente)
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
     printf("                         O que você deseja fazer?                          \n\n");
-    printf("                 Endereço: %s, %s, %d, CEP: %s                             \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+    printf("                 Endereço: %s, %s, %d, CEP: %s                             \n", cliente->rest.end.endereco, cliente->rest.end.logradouro, cliente->rest.end.numero, cliente->end.cep);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
@@ -1232,7 +1246,7 @@ void status_restaurante_ui(struct Cliente *cliente)
     printf("|                   S T A T U S   D O   R E S T A U R A N T E             |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
-    printf("                       Status atual do restaurante: %s                       \n\n", cliente->rest.status == 'a' ? "Aberto" : "Fechado");
+    printf("                     Status atual do restaurante: %s                       \n\n", cliente->rest.status == 'a' ? "Aberto" : "Fechado");
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
@@ -1255,7 +1269,7 @@ void horario_funcionamento_ui(struct Cliente *cliente)
     printf("|             H O R Á R I O   D E   F U N C I O N A M E N T O             |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
-    printf("           Horário de funcionamento do restaurante:%s - %s                 \n\n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
+    printf("           Horário de funcionamento do restaurante: %s - %s                \n\n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
@@ -1289,4 +1303,23 @@ void dados_gerais_restaurante_ui(struct Cliente *cliente)
     printf("  | Número:     %-54d  |\n", cliente->rest.end.numero);
     printf("  | CEP:        %-54s  |\n", cliente->rest.end.cep);
     printf("  +---------------------------------------------------------------------+\n\n");
+
+    printf("  +---------------------------------------------------------------------+  \n");
+    printf("  | HORÁRIOS DE FUNCIONAMENTO                                           |  \n");
+    printf("  +---------------------------------------------------------------------+  \n");
+    printf("  | Segunda - Sexta: %s - %-60s |  \n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
+    printf("  | Sábado - Domingo: %s - %-60s |  \n", cliente->rest.horario_abertura_fds, cliente->rest.horario_fechamento_fds);
+    printf("  +---------------------------------------------------------------------+  \n\n");
+}
+
+void login_nao_cadastrado_ui()
+{
+    clearScreen();
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                                                              |\n");
+    printf("|                           USUÁRIO NÃO CADASTRADO                             |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n\n");
+    printf("              Por favor, realize o cadastro antes de fazer login.\n\n");
+    printf("+------------------------------------------------------------------------------+\n\n");
 }
