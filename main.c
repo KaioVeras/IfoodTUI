@@ -1318,12 +1318,24 @@ void dados_gerais_restaurante_ui(struct Cliente *cliente)
     printf("  | CEP:        %-54s  |\n", cliente->rest.end.cep);
     printf("  +---------------------------------------------------------------------+\n\n");
 
-    printf("  +---------------------------------------------------------------------+  \n");
-    printf("  | HORÁRIOS DE FUNCIONAMENTO                                           |  \n");
-    printf("  +---------------------------------------------------------------------+  \n");
-    printf("  | Segunda - Sexta: %s - %-60s |  \n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
-    printf("  | Sábado - Domingo: %s - %-60s |  \n", cliente->rest.horario_abertura_fds, cliente->rest.horario_fechamento_fds);
-    printf("  +---------------------------------------------------------------------+  \n\n");
+    printf("  +---------------------------------------------------------------------+\n");
+    printf("  | HORÁRIOS DE FUNCIONAMENTO                                           |\n");
+    printf("  +---------------------------------------------------------------------+\n");
+    printf("  | Segunda - Sexta: %s - %-42s |\n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
+    printf("  | Sábado - Domingo: %s - %-42s |\n", cliente->rest.horario_abertura_fds, cliente->rest.horario_fechamento_fds);
+    printf("  +---------------------------------------------------------------------+\n\n");
+
+    printf("  +---------------------------------------------------------------------+\n");
+    printf("  | STATUS ATUAL                                                        |\n");
+    printf("  +---------------------------------------------------------------------+\n");
+    if (cliente->rest.status == 'a') {
+        printf("  | >>>>>   A B E R T O   <<<<<                                         |\n");
+    } else {
+        printf("  | >>>>>   F E C H A D O   <<<<<                                       |\n");
+    }
+    printf("  +---------------------------------------------------------------------+\n\n");
+    
+    printf("Pressione Enter para voltar...");
 }
 
 void login_nao_cadastrado_ui()
