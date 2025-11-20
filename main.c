@@ -73,6 +73,7 @@ void restaurante_perfil_ui(struct Cliente *cliente);
 void restaurante_configuracoes_ui();
 void perfil_cliente_ui(struct Cliente *cliente);
 void editar_perfil_cliente_ui(struct Cliente *cliente);
+void alterar_senha_cliente_ui();
 void modo_cliente_ui(struct Cliente *cliente);
 void modo_entregador_ui(struct Cliente *cliente);
 void modo_restaurante_ui(struct Cliente *cliente);
@@ -268,7 +269,7 @@ int main()
 
                                             case 4:
 
-                                                break;
+                                            break;
 
                                             default:
                                                 clearScreen();
@@ -306,6 +307,7 @@ int main()
                         break;
 
                     case 2:
+                        alterar_senha_cliente_ui();
                         modo_entregador_ui(&cliente);
                         limparBuffer();
                         getchar();
@@ -1187,6 +1189,18 @@ void editar_perfil_cliente_ui(struct Cliente *cliente)
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
     printf("                 Nome do Perfil:%s | Email:%s                              \n\n", cliente->nome, cliente->email);
+    printf("  +---------------------------------------------------------------------+  \n\n");
+}
+
+void alterar_senha_cliente_ui()
+{
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|               A L T E R A R   S E N H A   D O   C L I E N T E           |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+    printf("                 Por favor, insira sua nova senha abaixo.                  \n\n");
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
