@@ -61,6 +61,8 @@ void menu_ui();
 void login_ui();
 void cadastro_ui();
 void clearScreen();
+void enter_ui();
+void opcao_invalida_ui();
 void limparBuffer();
 void code_ui(struct Cliente *cliente);
 void login_error_ui();
@@ -73,7 +75,8 @@ void restaurante_perfil_ui(struct Cliente *cliente);
 void restaurante_configuracoes_ui();
 void perfil_cliente_ui(struct Cliente *cliente);
 void editar_perfil_cliente_ui(struct Cliente *cliente);
-void alterar_senha_cliente_ui();
+void alterar_senha_cliente_ui(struct Cliente *cliente);
+void excluir_conta_cliente_ui();
 void modo_cliente_ui(struct Cliente *cliente);
 void modo_entregador_ui(struct Cliente *cliente);
 void modo_restaurante_ui(struct Cliente *cliente);
@@ -85,6 +88,8 @@ void dados_restaurante_ui();
 void cadastro_restaurante_ui();
 void dados_gerais_restaurante_ui(struct Cliente *cliente);
 void login_nao_cadastrado_ui();
+void editar_horario_semana_ui();
+void editar_horario_fds_ui();
 
 /// Protótipos das Funções
 int menu(int opcao);
@@ -94,6 +99,7 @@ int menu_restaurante();
 int menu_configuracoes_restaurante(struct Cliente *cliente);
 int menu_perfil_cliente();
 int menu_editar_perfil_cliente();
+int menu_editar_horario_restaurante();
 int cadastro(struct Cliente *cliente);
 int cadastro_restaurante(struct Cliente *cliente);
 int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente);
@@ -107,8 +113,6 @@ int main()
     srand(time(NULL)); // Inicializa o gerador de números aleatórios
 
     struct Cliente cliente;
-    struct Restaurante restaurante;
-    struct Entregador entregador;
 
     int opcao = 0, tipo = 0;
 
@@ -129,9 +133,7 @@ int main()
             {
                 clearScreen();
                 printf("Usuário já cadastrado! Tente logar.\n");
-                printf("\nPressione ENTER para continuar...");
-                limparBuffer();
-                getchar();
+                enter_ui();
             }
             else
             {
@@ -146,9 +148,7 @@ int main()
             {
                 clearScreen();
                 login_nao_cadastrado_ui();
-                printf("\nPressione ENTER para continuar...");
-                limparBuffer();
-                getchar();
+                enter_ui();
             }
             else
             {
@@ -162,14 +162,13 @@ int main()
                     tipo = 0;
                     tipo = menu_tipo();
 
-                    switch (tipo)
-                    {
+                    switch (tipo){
                     case 1:
-                        modo_cliente_ui(&cliente);
-                        limparBuffer();
-
                         do
                         {
+                            modo_cliente_ui(&cliente);
+                            limparBuffer();
+
                             tipo = 0;
                             tipo = menu_cliente();
 
@@ -188,22 +187,22 @@ int main()
                                 break;
 
                             case 3:
-                                perfil_cliente_ui(&cliente);
-                                limparBuffer();
-
                                 do
                                 {
+                                    perfil_cliente_ui(&cliente);
+                                    limparBuffer();
+
                                     tipo = 0;
                                     tipo = menu_perfil_cliente();
 
                                     switch (tipo)
                                     {
                                     case 1:
-                                        editar_perfil_cliente_ui(&cliente);
-                                        limparBuffer();
-
                                         do
                                         {
+                                            editar_perfil_cliente_ui(&cliente);
+                                            limparBuffer();
+
                                             tipo = 0;
                                             tipo = menu_editar_perfil_cliente();
 
@@ -213,8 +212,9 @@ int main()
                                                 int i = 0, ultimo_espaco = 0;
                                                 printf("Insira o novo nome: ");
                                                 scanf(" %[^\n]s", cliente.nome);
+                                                cliente.nome[0] = toupper(cliente.nome[0]);
 
-                                                for (i = 0; i < strlen(cliente.nome); i++)
+                                                for (i = 0; i < (int)strlen(cliente.nome); i++)
                                                 {
                                                     if (cliente.nome[i] == ' ')
                                                     {
@@ -222,16 +222,13 @@ int main()
                                                     }
                                                 }
 
-                                                cliente.nome[0] = toupper(cliente.nome[0]);
                                                 if (ultimo_espaco > 0)
                                                 {
                                                     cliente.nome[ultimo_espaco] = toupper(cliente.nome[ultimo_espaco]);
                                                 }
 
                                                 printf("O nome foi alterado com sucesso!\n Novo nome: %s\n", cliente.nome);
-                                                printf("\nPressione ENTER para continuar...");
-                                                limparBuffer();
-                                                getchar();
+                                                enter_ui();
                                                 break;
 
                                             case 2:
@@ -239,9 +236,7 @@ int main()
                                                 scanf(" %s", cliente.email);
 
                                                 printf("O email foi alterado com sucesso!\n Novo email: %s\n", cliente.email);
-                                                printf("\nPressione ENTER para continuar...");
-                                                limparBuffer();
-                                                getchar();
+                                                enter_ui();
                                                 break;
 
                                             case 3:
@@ -262,30 +257,43 @@ int main()
                                                 }
 
                                                 printf("O endereco foi alterado com sucesso!\n Novo endereco: %s, %s, %d, CEP: %s\n", cliente.end.endereco, cliente.end.logradouro, cliente.end.numero, cliente.end.cep);
-                                                printf("\nPressione ENTER para continuar...");
-                                                limparBuffer();
-                                                getchar();
+                                                enter_ui();
                                                 break;
 
                                             case 4:
 
-                                            break;
+                                                break;
 
                                             default:
-                                                clearScreen();
-                                                printf("Opcao invalida, tente novamente\n");
+                                                opcao_invalida_ui();
                                             }
                                         } while (tipo != 4);
                                         break;
 
                                     case 2:
+                                        alterar_senha_cliente_ui(&cliente);
                                         printf("Alterar Senha: ");
                                         scanf(" %s", cliente.senha);
+                                        le_valida_verificacao(&cliente);
                                         printf("Senha alterada com sucesso!\n");
+                                        enter_ui();
                                         break;
 
                                     case 3:
-                                        printf("Excluir Conta");
+                                        char delete_confirm;
+                                        excluir_conta_cliente_ui();
+                                        printf("Excluir Conta: Tem certeza que deseja excluir sua conta? (s/n): ");
+                                        scanf(" %c", &delete_confirm);
+                                        if (delete_confirm == 's' || delete_confirm == 'S')
+                                        {
+                                            memset(&cliente, 0, sizeof(struct Cliente));
+                                            printf("Conta excluída com sucesso!\n");
+                                        }
+                                        else
+                                        {
+                                            printf("Operação cancelada. Sua conta não foi excluída.\n");
+                                        }
+                                        enter_ui();
                                         break;
 
                                     case 4:
@@ -293,8 +301,7 @@ int main()
                                         break;
 
                                     default:
-                                        clearScreen();
-                                        printf("Opcao invalida, tente novamente\n");
+                                        opcao_invalida_ui();
                                     }
                                 } while (tipo != 4);
                                 break;
@@ -307,7 +314,6 @@ int main()
                         break;
 
                     case 2:
-                        alterar_senha_cliente_ui();
                         modo_entregador_ui(&cliente);
                         limparBuffer();
                         getchar();
@@ -412,16 +418,47 @@ int main()
                                             }
                                         }
 
-                                        printf("\nPressione ENTER para voltar...");
-                                        limparBuffer();
-                                        getchar();
-
+                                        enter_ui();
                                         break;
 
                                     case 3:
                                         horario_funcionamento_ui(&cliente);
-                                        limparBuffer();
-                                        getchar();
+
+                                        tipo = 0;
+                                        tipo = menu_editar_horario_restaurante();
+
+                                        switch (tipo)
+                                        {
+                                        case 1:
+                                            editar_horario_semana_ui();
+                                            printf("Insira o novo horário de abertura (HH:MM): ");
+                                            scanf(" %5s", cliente.rest.horario_abertura);
+
+                                            printf("Insira o novo horário de fechamento (HH:MM): ");
+                                            scanf(" %5s", cliente.rest.horario_fechamento);
+
+                                            printf("\nHorários da semana atualizados com sucesso!\n");
+                                            printf("Novo horário: %s - %s\n", cliente.rest.horario_abertura, cliente.rest.horario_fechamento);
+                                            enter_ui();
+                                            break;
+
+                                        case 2:
+                                            editar_horario_fds_ui();
+                                            printf("Insira o novo horário de abertura (HH:MM): ");
+                                            scanf(" %5s", cliente.rest.horario_abertura_fds);
+
+                                            printf("Insira o novo horário de fechamento (HH:MM): ");
+                                            scanf(" %5s", cliente.rest.horario_fechamento_fds);
+
+                                            printf("\nHorários do final de semana atualizados com sucesso!\n");
+                                            printf("Novo horário: %s - %s\n", cliente.rest.horario_abertura_fds, cliente.rest.horario_fechamento_fds);
+                                            enter_ui();
+                                            break;
+
+                                        case 3:
+
+                                            break;
+                                        }
                                         break;
 
                                     case 4:
@@ -430,8 +467,7 @@ int main()
                                         break;
 
                                     default:
-                                        clearScreen();
-                                        printf("Opcao invalida, tente novamente\n");
+                                        opcao_invalida_ui();
                                     }
                                 } while (tipo != 4);
                                 break;
@@ -441,8 +477,7 @@ int main()
                                 break;
 
                             default:
-                                clearScreen();
-                                printf("Opcao invalida, tente novamente\n");
+                                opcao_invalida_ui();
                             }
                         } while (tipo != 5);
 
@@ -462,8 +497,7 @@ int main()
             break;
 
         default:
-            clearScreen();
-            printf("Opcao invalida, tente novamente\n");
+            opcao_invalida_ui();
         }
     } while (opcao != 3);
     return 0;
@@ -590,6 +624,36 @@ int menu_restaurante()
     return tipo;
 }
 
+int menu_editar_horario_restaurante()
+{
+    int cont = 0;
+    int tipo = 0;
+
+    printf("[1] >> Horário da semanda (Seg-Sex)\n");
+    printf("[2] >> Horário do final de semana (Sáb-Dom)\n");
+
+    printf("[3] >> Voltar\n");
+
+    do
+    {
+        if (cont > 0)
+        {
+            printf("Opcao invalida! Tente novamente: ");
+        }
+
+        printf("Entre o numero desejado: ");
+        if (scanf("%d", &tipo) != 1)
+        {
+            limparBuffer();
+            tipo = 0;
+        }
+
+        cont++;
+    } while (tipo != 1 && tipo != 2 && tipo != 3);
+
+    return tipo;
+}
+
 int menu_perfil_cliente()
 {
     int cont = 0;
@@ -653,6 +717,7 @@ int menu_editar_perfil_cliente()
 // Função do Menu configurações do restaurante
 int menu_configuracoes_restaurante(struct Cliente *cliente)
 {
+    (void)cliente; // Parâmetro não utilizado no momento
     int cont = 0;
     int tipo = 0;
 
@@ -693,20 +758,37 @@ int cadastro_restaurante(struct Cliente *cliente)
     char fechamento[6];
     char abertura_fds[6];
     char fechamento_fds[6];
+    int primeiro_espaco = 0, i = 0, cont = 0;
 
     cadastro_restaurante_ui();
 
     printf("Digite o nome do restaurante: ");
     scanf(" %[^\n]s", nome);
+    nome[0] = toupper(nome[0]);
 
     printf("Digite o tipo de culinária: ");
     scanf(" %[^\n]s", tipo);
+    tipo[0] = toupper(tipo[0]);
 
     printf("Digite o telefone do restaurante: ");
     scanf(" %s", telefone);
 
     printf("Digite o endereço do restaurante: ");
     scanf(" %19[^\n]", cliente->rest.end.endereco);
+
+    for (i = 0; i < (int)strlen(cliente->rest.end.endereco); i++)
+    {
+        if (cliente->rest.end.endereco[i] == ' ' && cont == 0)
+        {
+            primeiro_espaco = i;
+            cont++;
+        }
+    }
+
+    for (i = 0; i < primeiro_espaco; i++)
+    {
+        cliente->rest.end.endereco[i] = toupper(cliente->rest.end.endereco[i]);
+    }
 
     printf("Digite o logradouro do restaurante: ");
     scanf(" %9[^\n]", cliente->rest.end.logradouro);
@@ -748,9 +830,7 @@ int cadastro_restaurante(struct Cliente *cliente)
     cliente->rest.cadastrado = 1;
 
     printf("\nRestaurante cadastrado com sucesso!!\n");
-    printf(">> Pressione ENTER para continuar...");
-    limparBuffer();
-    getchar();
+    enter_ui();
     return 0;
 }
 
@@ -767,7 +847,7 @@ int cadastro(struct Cliente *cliente)
     printf("Digite seu nome: ");
     scanf(" %[^\n]s", nome);
 
-    for (i = 0; i < strlen(nome); i++)
+    for (i = 0; i < (int)strlen(nome); i++)
     {
         if (nome[i] == ' ')
         {
@@ -792,15 +872,14 @@ int cadastro(struct Cliente *cliente)
     strcpy(cliente->senha, senha);
 
     printf("\nCadastro realizado com sucesso!!\n");
-    printf(">> Pressione ENTER para continuar...");
-    limparBuffer();
-    getchar();
+    enter_ui();
     return 0;
 }
 
 // funçaõ cadastro entregador ------------
 int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente)
 {
+    (void)entregador; // Parâmetro não utilizado no momento
     char tipo_veiculo[10];
     char placa[8];
     int idade = 0;
@@ -836,6 +915,8 @@ int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente)
     {
         printf("Não tem placa para bicicleta.");
     }
+
+    return 0;
 }
 
 // Função de login
@@ -863,9 +944,7 @@ int logar(struct Cliente *cliente)
     cliente->cadastro = 1;
 
     printf("\nLogin realizado com sucesso!!\n");
-    printf(">> Pressione ENTER para continuar...");
-    limparBuffer();
-    getchar();
+    enter_ui();
     return 0;
 }
 
@@ -891,9 +970,7 @@ int endereco(struct Endereco *end)
     }
 
     printf("\nEndereco cadastrado com sucesso!!\n");
-    printf(">> Pressione ENTER para continuar...");
-    limparBuffer();
-    getchar();
+    enter_ui();
     return 0;
 }
 
@@ -945,9 +1022,7 @@ int le_valida_verificacao(struct Cliente *cliente)
         if (codigo_inserido == codigo_correto)
         {
             printf("\nCódigo validado com sucesso.\n");
-            printf(">> Pressione ENTER para continuar...");
-            limparBuffer();
-            getchar();
+            enter_ui();
             break;
         }
         else
@@ -980,6 +1055,14 @@ void limparBuffer()
     int c;
     while ((c = getchar()) != '\n' && c != EOF)
         ;
+}
+
+// Procedimento paar pausar a interface do usuário
+void enter_ui()
+{
+    printf("\n>> Pressione ENTER para continuar...");
+    limparBuffer();
+    getchar();
 }
 
 // Procedimento para configurar a acentuação
@@ -1192,15 +1275,27 @@ void editar_perfil_cliente_ui(struct Cliente *cliente)
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void alterar_senha_cliente_ui()
+void alterar_senha_cliente_ui(struct Cliente *cliente)
 {
     clearScreen();
     printf("+-------------------------------------------------------------------------+\n");
     printf("|                                                                         |\n");
-    printf("|               A L T E R A R   S E N H A   D O   C L I E N T E           |\n");
+    printf("|                 A L T E R A R   S E N H A   D O   C L I E N T E         |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
-    printf("                 Por favor, insira sua nova senha abaixo.                  \n\n");
+    printf("                 Nome do Perfil:%s | Email:%s                              \n\n", cliente->nome, cliente->email);
+    printf("  +---------------------------------------------------------------------+  \n\n");
+}
+
+void excluir_conta_cliente_ui()
+{
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|>>>>>>>>>>>> E X C L U I R   C O N T A   D O   C L I E N T E <<<<<<<<<<<<|\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+    printf("    Tem certeza que deseja excluir sua conta? Esta ação é irreversível     \n\n");
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
@@ -1283,7 +1378,8 @@ void horario_funcionamento_ui(struct Cliente *cliente)
     printf("|             H O R Á R I O   D E   F U N C I O N A M E N T O             |\n");
     printf("|                                                                         |\n");
     printf("+-------------------------------------------------------------------------+\n\n");
-    printf("           Horário de funcionamento do restaurante: %s - %s                \n\n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
+    printf("                       Segunda - Sexta: %s - %s               \n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
+    printf("                       Sábado - Domingo: %s - %s               \n\n", cliente->rest.horario_abertura_fds, cliente->rest.horario_fechamento_fds);
     printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
@@ -1322,20 +1418,23 @@ void dados_gerais_restaurante_ui(struct Cliente *cliente)
     printf("  | HORÁRIOS DE FUNCIONAMENTO                                           |\n");
     printf("  +---------------------------------------------------------------------+\n");
     printf("  | Segunda - Sexta: %s - %-42s |\n", cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
-    printf("  | Sábado - Domingo: %s - %-42s |\n", cliente->rest.horario_abertura_fds, cliente->rest.horario_fechamento_fds);
+    printf("  | Sábado - Domingo: %s - %-41s |\n", cliente->rest.horario_abertura_fds, cliente->rest.horario_fechamento_fds);
     printf("  +---------------------------------------------------------------------+\n\n");
 
     printf("  +---------------------------------------------------------------------+\n");
     printf("  | STATUS ATUAL                                                        |\n");
     printf("  +---------------------------------------------------------------------+\n");
-    if (cliente->rest.status == 'a') {
+    if (cliente->rest.status == 'a')
+    {
         printf("  | >>>>>   A B E R T O   <<<<<                                         |\n");
-    } else {
+    }
+    else
+    {
         printf("  | >>>>>   F E C H A D O   <<<<<                                       |\n");
     }
     printf("  +---------------------------------------------------------------------+\n\n");
-    
-    printf("Pressione Enter para voltar...");
+
+    enter_ui();
 }
 
 void login_nao_cadastrado_ui()
@@ -1348,4 +1447,36 @@ void login_nao_cadastrado_ui()
     printf("+------------------------------------------------------------------------------+\n\n");
     printf("              Por favor, realize o cadastro antes de fazer login.\n\n");
     printf("+------------------------------------------------------------------------------+\n\n");
+}
+
+void opcao_invalida_ui()
+{
+    clearScreen();
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                                                              |\n");
+    printf("|           O P Ç Ã O  I N V Á L I D A !  T E N T E  N O V A M E N T E         |\n");
+    printf("|                                                                              |\n");
+    printf("+------------------------------------------------------------------------------+\n");
+    enter_ui();
+}
+
+void editar_horario_semana_ui()
+{
+    clearScreen();
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|             E D I T A R   H O R Á R I O   D A   S E M A N A             |\n");
+    printf("|                        ( S e g u n d a   -   S e x t a )                |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
+}
+
+void editar_horario_fds_ui()
+{
+    printf("+-------------------------------------------------------------------------+\n");
+    printf("|                                                                         |\n");
+    printf("|    E D I T A R   H O R Á R I O   D O   F I N A L   D E   S E M A N A    |\n");
+    printf("|                    ( S á b a d o   -   D o m i n g o )                  |\n");
+    printf("|                                                                         |\n");
+    printf("+-------------------------------------------------------------------------+\n\n");
 }
