@@ -61,7 +61,6 @@ void menu_ui();
 void login_ui();
 void cadastro_ui();
 void clearScreen();
-void enter_ui();
 void opcao_invalida_ui();
 void limparBuffer();
 void code_ui(struct Cliente *cliente);
@@ -97,6 +96,7 @@ int menu_tipo();
 int menu_cliente();
 int menu_restaurante();
 int menu_configuracoes_restaurante(struct Cliente *cliente);
+int menu_home();
 int menu_perfil_cliente();
 int menu_editar_perfil_cliente();
 int menu_editar_horario_restaurante();
@@ -104,10 +104,12 @@ int cadastro(struct Cliente *cliente);
 int cadastro_restaurante(struct Cliente *cliente);
 int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente);
 int logar(struct Cliente *cliente);
+int enter_ui();
 int le_valida_verificacao(struct Cliente *cliente);
 char *alterar_senha(struct Cliente *cliente);
 int excluir_conta(struct Cliente *cliente);
 int endereco(struct Endereco *end);
+
 
 int main()
 {
@@ -135,14 +137,14 @@ int main()
                      {
                             clearScreen();
                             printf("Usuário já cadastrado! Tente logar.\n");
-                            enter_ui();
+                            tipo = enter_ui();
                      }
                      else
                      {
                             cadastro(&cliente);
                             endereco(&cliente.end);
                             le_valida_verificacao(&cliente);
-                            enter_ui();
+                            tipo = enter_ui();
                      }
                      break;
 
@@ -151,7 +153,7 @@ int main()
                      {
                             clearScreen();
                             login_nao_cadastrado_ui();
-                            enter_ui();
+                            tipo = enter_ui();
                      }
                      else
                      {
@@ -180,6 +182,7 @@ int main()
                                                  {
                                                  case 1:
                                                         home_cliente_ui(&cliente);
+
                                                         limparBuffer();
                                                         getchar();
                                                         break;
@@ -233,7 +236,7 @@ int main()
                                                                                     printf("O nome foi alterado com sucesso!\n Novo nome: "
                                                                                            "%s\n",
                                                                                            cliente.nome);
-                                                                                    enter_ui();
+                                                                                    tipo = enter_ui();
                                                                                     break;
 
                                                                              case 2:
@@ -243,7 +246,7 @@ int main()
                                                                                     printf("O email foi alterado com sucesso!\n Novo "
                                                                                            "email: %s\n",
                                                                                            cliente.email);
-                                                                                    enter_ui();
+                                                                                    tipo = enter_ui();
                                                                                     break;
 
                                                                              case 3:
@@ -267,7 +270,7 @@ int main()
                                                                                            "endereco: %s, %s, %d, CEP: %s\n",
                                                                                            cliente.end.endereco, cliente.end.logradouro,
                                                                                            cliente.end.numero, cliente.end.cep);
-                                                                                    enter_ui();
+                                                                                    tipo = enter_ui();
                                                                                     break;
 
                                                                              case 4:
@@ -288,16 +291,17 @@ int main()
 
                                                                       alterar_senha_cliente_ui(&cliente);
                                                                       printf("Senha alterada com sucesso!\n");
-                                                                      // printf("\n>> Pressione ENTER para continuar...");
-                                                                      // limparBuffer();
-                                                                      // getchar();
-                                                                      enter_ui();
+                                                                      tipo = enter_ui();
                                                                       break;
 
                                                                case 3:
                                                                       excluir_conta_cliente_ui();
-                                                                      excluir_conta(&cliente);
-                                                                      enter_ui();
+                                                                      if(excluir_conta(&cliente) == 1) {
+                                                                             tipo = 4;
+                                                                      }
+                                                                      printf("\n>> Pressione ENTER para continuar...");
+                                                                      limparBuffer();
+                                                                      getchar();
                                                                       break;
 
                                                                case 4:
@@ -315,14 +319,12 @@ int main()
                                                         break;
                                                  }
                                           } while (tipo != 4);
-                                          tipo = 0;
                                           break;
 
                                    case 2:
                                           modo_entregador_ui(&cliente);
-                                          limparBuffer();
-                                          getchar();
-                                          tipo = 0;
+                                          
+                                          tipo = enter_ui();
                                           break;
 
                                    case 3:
@@ -426,7 +428,7 @@ int main()
                                                                              }
                                                                       }
 
-                                                                      enter_ui();
+                                                                      tipo = enter_ui();
                                                                       break;
 
                                                                case 3:
@@ -449,7 +451,7 @@ int main()
                                                                              printf("Novo horário: %s - %s\n",
                                                                                     cliente.rest.horario_abertura,
                                                                                     cliente.rest.horario_fechamento);
-                                                                             enter_ui();
+                                                                             tipo = enter_ui();
                                                                              break;
 
                                                                       case 2:
@@ -465,7 +467,7 @@ int main()
                                                                              printf("Novo horário: %s - %s\n",
                                                                                     cliente.rest.horario_abertura_fds,
                                                                                     cliente.rest.horario_fechamento_fds);
-                                                                             enter_ui();
+                                                                             tipo = enter_ui();
                                                                              break;
 
                                                                       case 3:
@@ -493,7 +495,7 @@ int main()
                                                         opcao_invalida_ui();
                                                  }
                                           } while (tipo != 5);
-                                          tipo = 0;
+                                          // tipo = 0;
                                           break;
 
                                    case 4:
@@ -696,6 +698,37 @@ int menu_perfil_cliente()
 
        return tipo;
 }
+
+int menu_home()
+{
+       int cont = 0;
+       int tipo = 0;
+
+       printf("[1] >> Alterar Nome\n");
+       printf("[2] >> Alterar Email\n");
+       printf("[3] >> Alterar Endereço\n\n");
+       printf("[4] >> Voltar\n");
+
+       do
+       {
+              if (cont > 0)
+              {
+                     printf("Opcao invalida! Tente novamente: ");
+              }
+
+              printf("Entre o numero desejado: ");
+              if (scanf("%d", &tipo) != 1)
+              {
+                     limparBuffer();
+                     tipo = 0;
+              }
+
+              cont++;
+       } while (tipo != 1 && tipo != 2 && tipo != 3 && tipo != 4);
+
+       return tipo;
+}
+
 
 int menu_editar_perfil_cliente()
 {
@@ -1051,8 +1084,10 @@ int excluir_conta(struct Cliente *cliente)
               cont++;
               } while(strcmp(senha, cliente->senha) != 0);
               
+              cliente->cadastro = 0;
               memset(&cliente, 0, sizeof(struct Cliente));
               printf("\nConta excluída com sucesso!\n");
+              return 1;
        }
        else{
               printf("\nOperação cancelada. Sua conta não foi excluída.\n");
@@ -1124,6 +1159,15 @@ int le_valida_verificacao(struct Cliente *cliente)
        return 0;
 }
 
+// Procedimento paar pausar a interface do usuário
+int enter_ui()
+{      
+       printf("\n>> Pressione ENTER para continuar...");
+       limparBuffer();
+       getchar();
+       return 0;
+}
+
 // Procedimento para limpar a tela de acordo com o sistema operacional
 void clearScreen()
 {
@@ -1140,14 +1184,6 @@ void limparBuffer()
        int c;
        while ((c = getchar()) != '\n' && c != EOF)
               ;
-}
-
-// Procedimento paar pausar a interface do usuário
-void enter_ui()
-{
-       printf("\n>> Pressione ENTER para continuar...");
-       limparBuffer();
-       getchar();
 }
 
 // Procedimento para configurar a acentuação
@@ -1372,11 +1408,9 @@ void home_cliente_ui(struct Cliente *cliente)
               "     |\n");
        printf("+--------------------------------------------------------------------"
               "-----+\n\n");
-              
-       // printf("| (1) - %s (4.8) - [taxa de entrega -> 15 reais]\n| Horário de "
-       //        "funcionamento: 16:00 %s as %s - Tempo de Entrega: 20-30 min\n| Tipo: %s\n\n",
-       //        cliente->rest.nome_restaurante, cliente->rest.horario_abertura,
-       //        cliente->rest.horario_fechamento, cliente->rest.tipo_culinaria);
+       // printf("(1) - %s (5.0) Horário de funcionamento %s as %s\n Tipo de comida: %s Taxa de entrega: Grátis",
+       //  cliente->rest.nome_restaurante, cliente->rest.horario_abertura, cliente->rest.horario_fechamento, cliente->rest.tipo_culinaria);       
+       
               
 }
 
