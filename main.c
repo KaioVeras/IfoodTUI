@@ -1591,8 +1591,10 @@ int le_valida_verificacao(struct Cliente *cliente)
 int enter_ui()
 {
        printf("\n>> Pressione ENTER para continuar...");
-       limparBuffer();
-       getchar();
+       // Limpa qualquer caractere pendente no buffer
+       int c;
+       while ((c = getchar()) != '\n' && c != EOF)
+              ;
        return 0;
 }
 
@@ -2387,8 +2389,9 @@ void adicionar_item_carrinho(struct Carrinho *carrinho, int id_produto, char nom
               return;
        }
 
-       // Verifica se o produto já está no carrinho
-       for (int i = 0; i < carrinho->num_itens; i++)
+       /* Verifica se o produto já está no carrinho */
+       int i;
+       for (i = 0; i < carrinho->num_itens; i++)
        {
               if (carrinho->itens[i].id_produto == id_produto)
               {
@@ -2421,8 +2424,9 @@ void remover_item_carrinho(struct Carrinho *carrinho, int index)
               return;
        }
 
-       // Desloca os itens
-       for (int i = index; i < carrinho->num_itens - 1; i++)
+       /* Desloca os itens */
+       int i;
+       for (i = index; i < carrinho->num_itens - 1; i++)
        {
               carrinho->itens[i] = carrinho->itens[i + 1];
        }
@@ -2441,7 +2445,8 @@ void limpar_carrinho(struct Carrinho *carrinho)
 float calcular_total_carrinho(struct Carrinho *carrinho)
 {
        float total = 0.0;
-       for (int i = 0; i < carrinho->num_itens; i++)
+       int i;
+       for (i = 0; i < carrinho->num_itens; i++)
        {
               total += carrinho->itens[i].subtotal;
        }
@@ -2514,7 +2519,8 @@ void listar_produtos_ui(struct Produto produtos[], int num_produtos)
               return;
        }
 
-       for (int i = 0; i < num_produtos; i++)
+       int i;
+       for (i = 0; i < num_produtos; i++)
        {
               printf("ID: %d | %s %s\n", produtos[i].id, produtos[i].ativo ? "[✓]" : "[X]", produtos[i].nome);
               printf("   Categoria: %s | Preço: R$ %.2f | Estoque: %d\n", produtos[i].categoria, produtos[i].preco, produtos[i].quantidade);
@@ -2522,6 +2528,187 @@ void listar_produtos_ui(struct Produto produtos[], int num_produtos)
               printf("-----------------------------------------------------------------------\n");
        }
 
+       enter_ui();
+}
+
+void editar_produto_ui(struct Produto produtos[], int num_produtos)
+{
+       if (num_produtos == 0)
+       {
+              printf("\nNenhum produto cadastrado para editar.\n");
+              enter_ui();
+              return;
+       }
+
+       clearScreen();
+       printf("+-----------------------------------------------------------------------+\n");
+       printf("|                        EDITAR PRODUTO                                 |\n");
+       printf("+-----------------------------------------------------------------------+\n\n");
+
+       /* Lista os produtos */
+       int i;
+       for (i = 0; i < num_produtos; i++)
+       {
+              printf("[%d] %s - R$ %.2f (Estoque: %d) %s\n", 
+                     produtos[i].id, produtos[i].nome, produtos[i].preco, 
+                     produtos[i].quantidade, produtos[i].ativo ? "[Ativo]" : "[Inativo]");
+       }
+
+       int id_produto;
+       printf("\nDigite o ID do produto para editar (0 para cancelar): ");
+       if (scanf("%d", &id_produto) != 1)
+       {
+              limparBuffer();
+              printf("ID inválido!\n");
+              enter_ui();
+              return;
+       }
+
+       if (id_produto == 0)
+              return;
+
+       /* Busca o produto */
+       int encontrado = -1;
+       for (i = 0; i < num_produtos; i++)
+       {
+              if (produtos[i].id == id_produto)
+              {
+                     encontrado = i;
+                     break;
+              }
+       }
+
+       if (encontrado == -1)
+       {
+              printf("\nProduto não encontrado!\n");
+              enter_ui();
+              return;
+       }
+
+       clearScreen();
+       printf("+-----------------------------------------------------------------------+\n");
+       printf("|                    EDITANDO: %s                                       |\n", produtos[encontrado].nome);
+       printf("+-----------------------------------------------------------------------+\n\n");
+
+       printf("Deixe em branco para manter o valor atual\n\n");
+
+       /* Editar nome */
+       printf("Nome atual: %s\n", produtos[encontrado].nome);
+       printf("Novo nome: ");
+       limparBuffer();
+       char novo_nome[50];
+       fgets(novo_nome, sizeof(novo_nome), stdin);
+       novo_nome[strcspn(novo_nome, "\n")] = 0;
+       if (strlen(novo_nome) > 0)
+       {
+              strcpy(produtos[encontrado].nome, novo_nome);
+       }
+
+       // Editar descrição
+       printf("\nDescrição atual: %s\n", produtos[encontrado].descricao);
+       printf("Nova descrição: ");
+       char nova_desc[100];
+       fgets(nova_desc, sizeof(nova_desc), stdin);
+       nova_desc[strcspn(nova_desc, "\n")] = 0;
+       if (strlen(nova_desc) > 0)
+       {
+              strcpy(produtos[encontrado].descricao, nova_desc);
+       }
+
+       // Editar preço
+       printf("\nPreço atual: R$ %.2f\n", produtos[encontrado].preco);
+       printf("Novo preço (0 para manter): ");
+       float novo_preco;
+       if (scanf("%f", &novo_preco) == 1 && novo_preco > 0)
+       {
+              produtos[encontrado].preco = novo_preco;
+       }
+
+       // Editar quantidade
+       printf("\nEstoque atual: %d\n", produtos[encontrado].quantidade);
+       printf("Novo estoque (-1 para manter): ");
+       int nova_qtd;
+       if (scanf("%d", &nova_qtd) == 1 && nova_qtd >= 0)
+       {
+              produtos[encontrado].quantidade = nova_qtd;
+       }
+
+       // Editar categoria
+       printf("\nCategoria atual: %s\n", produtos[encontrado].categoria);
+       printf("Nova categoria (Comida/Bebida/Acompanhamento/Sobremesa) ou Enter para manter: ");
+       limparBuffer();
+       char nova_cat[30];
+       fgets(nova_cat, sizeof(nova_cat), stdin);
+       nova_cat[strcspn(nova_cat, "\n")] = 0;
+       if (strlen(nova_cat) > 0)
+       {
+              strcpy(produtos[encontrado].categoria, nova_cat);
+       }
+
+       printf("\n✓ Produto atualizado com sucesso!\n");
+       enter_ui();
+}
+
+void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos)
+{
+       if (num_produtos == 0)
+       {
+              printf("\nNenhum produto cadastrado.\n");
+              enter_ui();
+              return;
+       }
+
+       clearScreen();
+       printf("+-----------------------------------------------------------------------+\n");
+       printf("|                   ATIVAR/DESATIVAR PRODUTO                            |\n");
+       printf("+-----------------------------------------------------------------------+\n\n");
+
+       /* Lista os produtos */
+       int i;
+       for (i = 0; i < num_produtos; i++)
+       {
+              printf("[%d] %s - %s\n", 
+                     produtos[i].id, produtos[i].nome, 
+                     produtos[i].ativo ? "[ATIVO]" : "[INATIVO]");
+       }
+
+       int id_produto;
+       printf("\nDigite o ID do produto (0 para cancelar): ");
+       if (scanf("%d", &id_produto) != 1)
+       {
+              limparBuffer();
+              printf("ID inválido!\n");
+              enter_ui();
+              return;
+       }
+
+       if (id_produto == 0)
+              return;
+
+       /* Busca o produto */
+       int encontrado = -1;
+       for (i = 0; i < num_produtos; i++)
+       {
+              if (produtos[i].id == id_produto)
+              {
+                     encontrado = i;
+                     break;
+              }
+       }
+
+       if (encontrado == -1)
+       {
+              printf("\nProduto não encontrado!\n");
+              enter_ui();
+              return;
+       }
+
+       /* Alterna o status */
+       produtos[encontrado].ativo = !produtos[encontrado].ativo;
+
+       printf("\n✓ Produto '%s' agora está: %s\n", 
+              produtos[encontrado].nome,
+              produtos[encontrado].ativo ? "ATIVO" : "INATIVO");
        enter_ui();
 }
 
@@ -2580,13 +2767,11 @@ void menu_gerenciar_produtos_ui(struct Produto produtos[], int *num_produtos)
                      break;
 
               case 3:
-                     printf("\nFuncionalidade em desenvolvimento...\n");
-                     enter_ui();
+                     editar_produto_ui(produtos, *num_produtos);
                      break;
 
               case 4:
-                     printf("\nFuncionalidade em desenvolvimento...\n");
-                     enter_ui();
+                     ativar_desativar_produto_ui(produtos, *num_produtos);
                      break;
 
               case 5:
@@ -2617,13 +2802,15 @@ void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
        char categorias[10][30];
        int num_categorias = 0;
 
-       for (int i = 0; i < num_produtos; i++)
+       /* Identifica categorias únicas */
+       int i, j;
+       for (i = 0; i < num_produtos; i++)
        {
               if (!produtos[i].ativo)
                      continue;
 
               int encontrou = 0;
-              for (int j = 0; j < num_categorias; j++)
+              for (j = 0; j < num_categorias; j++)
               {
                      if (strcmp(categorias[j], produtos[i].categoria) == 0)
                      {
@@ -2639,11 +2826,13 @@ void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
               }
        }
 
-       for (int cat = 0; cat < num_categorias; cat++)
+       /* Exibe produtos por categoria */
+       int cat;
+       for (cat = 0; cat < num_categorias; cat++)
        {
               printf("   %s\n", categorias[cat]);
 
-              for (int i = 0; i < num_produtos; i++)
+              for (i = 0; i < num_produtos; i++)
               {
                      if (produtos[i].ativo && strcmp(produtos[i].categoria, categorias[cat]) == 0)
                      {
@@ -2683,9 +2872,10 @@ void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos
               return;
        }
 
-       // Busca o produto
+       /* Busca o produto */
        int encontrado = -1;
-       for (int i = 0; i < num_produtos; i++)
+       int i;
+       for (i = 0; i < num_produtos; i++)
        {
               if (produtos[i].id == id_produto && produtos[i].ativo)
               {
@@ -2734,7 +2924,8 @@ void visualizar_carrinho_ui(struct Carrinho *carrinho)
               return;
        }
 
-       for (int i = 0; i < carrinho->num_itens; i++)
+       int i;
+       for (i = 0; i < carrinho->num_itens; i++)
        {
               printf("[%d] %s\n", i + 1, carrinho->itens[i].nome_produto);
               printf("    R$ %.2f x %d = R$ %.2f\n", carrinho->itens[i].preco_unitario, carrinho->itens[i].quantidade, carrinho->itens[i].subtotal);
@@ -2849,7 +3040,8 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, str
               strcpy(novo_pedido.cpf_cliente, cliente->cpf);
               strcpy(novo_pedido.nome_restaurante, "Restaurante Dinâmico");
 
-              for (int i = 0; i < carrinho->num_itens; i++)
+              int i;
+              for (i = 0; i < carrinho->num_itens; i++)
               {
                      novo_pedido.itens[i] = carrinho->itens[i];
               }
@@ -2868,14 +3060,15 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, str
               printf("Número do pedido: #%d\n", novo_pedido.id);
               printf("Status: %s\n\n", novo_pedido.status);
 
-              // Atualiza o estoque dos produtos
-              for (int i = 0; i < carrinho->num_itens; i++)
+              /* Atualiza o estoque dos produtos */
+              for (i = 0; i < carrinho->num_itens; i++)
               {
                      int id_produto = carrinho->itens[i].id_produto;
                      int qtd_comprada = carrinho->itens[i].quantidade;
                      
-                     // Busca o produto e atualiza o estoque
-                     for (int j = 0; j < 100; j++) // num_produtos máximo
+                     /* Busca o produto e atualiza o estoque */
+                     int j;
+                     for (j = 0; j < 100; j++) /* num_produtos máximo */
                      {
                             if (produtos[j].id == id_produto)
                             {
@@ -2922,8 +3115,9 @@ void adicionar_favorito_ui(struct Cliente *cliente)
               return;
        }
 
-       // Verifica se já está nos favoritos
-       for (int i = 0; i < cliente->num_favoritos; i++)
+       /* Verifica se já está nos favoritos */
+       int i;
+       for (i = 0; i < cliente->num_favoritos; i++)
        {
               if (cliente->restaurantes_favoritos[i] == opcao)
               {
@@ -2956,7 +3150,8 @@ void listar_favoritos_ui(struct Cliente *cliente)
 
        char *nomes[] = {"", "McDonald's", "Coco Bambu", "Domino's Pizza", "Restaurante Dinâmico"};
 
-       for (int i = 0; i < cliente->num_favoritos; i++)
+       int i;
+       for (i = 0; i < cliente->num_favoritos; i++)
        {
               int id = cliente->restaurantes_favoritos[i];
               printf("[%d] %s\n", i + 1, nomes[id]);
