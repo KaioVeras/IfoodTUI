@@ -1,0 +1,26 @@
+# EditorConfig - Configuração de estilo de código
+# https://editorconfig.org
+
+root = true
+
+# Configuração padrão para todos os arquivos
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Arquivos C/C++
+[*.{c,h}]
+indent_style = tab
+indent_size = 7
+tab_width = 7
+
+# Arquivos de configuração
+[*.{json,yml,yaml,md}]
+indent_style = space
+indent_size = 2
+
+# Makefile requer tabs
+[Makefile]
+indent_style = tab

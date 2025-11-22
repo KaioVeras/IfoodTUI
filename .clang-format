@@ -1,0 +1,63 @@
+# Configuração do clang-format para código C
+# Baseado no estilo usado no projeto
+
+BasedOnStyle: LLVM
+Language: Cpp
+
+# Indentação
+IndentWidth: 7
+TabWidth: 7
+UseTab: Always
+ContinuationIndentWidth: 7
+
+# Chaves
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterControlStatement: Always
+  AfterFunction: true
+  AfterStruct: true
+  AfterEnum: true
+
+# Espaçamento
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: true
+SpaceBeforeAssignmentOperators: true
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Alinhamento
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+AlignTrailingComments: false
+
+# Quebras de linha
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBinaryOperators: None
+ColumnLimit: 100
+
+# Ponteiros e Referências
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+# Includes
+SortIncludes: true
+IncludeBlocks: Preserve
+
+# Comentários
+ReflowComments: true
+
+# Switch
+IndentCaseLabels: false
+
+# Macros e Preprocessor
+IndentPPDirectives: None
+
+# Funções
+AllowAllParametersOfDeclarationOnNextLine: true
+BinPackParameters: true
