@@ -414,29 +414,31 @@ int main()
                                                                              switch (opcao_editar)
                                                                              {
                                                                              case 1:
-                                                                                    int i = 0, ultimo_espaco = 0;
-                                                                                    printf("Insira o novo nome: ");
-                                                                                    scanf(" %[^\n]s", cliente.nome);
-                                                                                    cliente.nome[0] = toupper(cliente.nome[0]);
-
-                                                                                    for (i = 0; i < (int)strlen(cliente.nome); i++)
                                                                                     {
-                                                                                           if (cliente.nome[i] == ' ')
+                                                                                           int i = 0, ultimo_espaco = 0;
+                                                                                           printf("Insira o novo nome: ");
+                                                                                           scanf(" %[^\n]s", cliente.nome);
+                                                                                           cliente.nome[0] = toupper(cliente.nome[0]);
+
+                                                                                           for (i = 0; i < (int)strlen(cliente.nome); i++)
                                                                                            {
-                                                                                                  ultimo_espaco = i + 1;
+                                                                                                  if (cliente.nome[i] == ' ')
+                                                                                                  {
+                                                                                                         ultimo_espaco = i + 1;
+                                                                                                  }
                                                                                            }
-                                                                                    }
 
-                                                                                    if (ultimo_espaco > 0)
-                                                                                    {
-                                                                                           cliente.nome[ultimo_espaco] =
-                                                                                               toupper(cliente.nome[ultimo_espaco]);
-                                                                                    }
+                                                                                           if (ultimo_espaco > 0)
+                                                                                           {
+                                                                                                  cliente.nome[ultimo_espaco] =
+                                                                                                      toupper(cliente.nome[ultimo_espaco]);
+                                                                                           }
 
-                                                                                    printf("O nome foi alterado com sucesso!\n Novo nome: "
-                                                                                           "%s\n",
-                                                                                           cliente.nome);
-                                                                                    enter_ui();
+                                                                                           printf("O nome foi alterado com sucesso!\n Novo nome: "
+                                                                                                  "%s\n",
+                                                                                                  cliente.nome);
+                                                                                           enter_ui();
+                                                                                    }
                                                                                     break;
 
                                                                              case 2:
