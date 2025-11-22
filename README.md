@@ -32,38 +32,38 @@ Aqui está o backlog das funcionalidades que vamos implementar.
 
 [✅] Cadastro de Cliente
 
-[ ] Login de Restaurante
+[✅] Login de Restaurante
 
-[ ] Cadastro de Restaurante
+[✅] Cadastro de Restaurante
 
-[ ] Fluxo do Restaurante
+[✅] Fluxo do Restaurante
 
-[ ] Cadastrar/Editar pratos (com nome, descrição, preço e quantidade em estoque)
+[✅] Cadastrar/Editar pratos (com nome, descrição, preço e quantidade em estoque)
 
-[ ] Cadastrar/Editar horário de funcionamento para cada dia da semana
+[✅] Cadastrar/Editar horário de funcionamento para cada dia da semana
 
-[ ] Visualizar pedidos recebidos
+[✅] Visualizar pedidos recebidos
 
-[ ] Fluxo do Cliente
+[✅] Fluxo do Cliente
 
 [ ] Listar restaurantes (e ver se estão abertos)
 
-[ ] Listar pratos de um restaurante
+[✅] Listar pratos de um restaurante
 
-[ ] Adicionar/Remover pratos do carrinho
+[✅] Adicionar/Remover pratos do carrinho
 
-[ ] Gerenciar pratos favoritos
+[✅] Gerenciar pratos favoritos
 
-[ ] Gerenciar endereços de entrega
+[] Gerenciar endereços de entrega
 
-[ ] Fluxo de Compra (Checkout)
+[✅] Fluxo de Compra (Checkout)
 
-[ ] Visualizar carrinho
+[✅] Visualizar carrinho
 
 [✅] Selecionar endereço
 
-[ ] Selecionar forma de pagamento (ex: Pix, Dinheiro)
+[✅] Selecionar forma de pagamento (ex: Pix, Dinheiro)
 
-[ ] Confirmar pedido
+[✅] Confirmar pedido
 
-[ ] Acompanhar status do pedido (ex: "Recebido", "Em Preparo", "Saiu para Entrega")
+[✅] Acompanhar status do pedido (ex: "Recebido", "Em Preparo", "Saiu para Entrega")
