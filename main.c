@@ -5,7 +5,6 @@
 #include <string.h>
 #include <time.h>
 
-
 // Inclusao de bibliotecas especificas para Windows
 #ifdef _WIN32
 #include <fcntl.h>
@@ -30,6 +29,12 @@ struct Entregador
        int idade;
 };
 
+struct HorarioDia
+{
+       char abertura[6];
+       char fechamento[6];
+};
+
 struct Restaurante
 {
        struct Endereco end;
@@ -37,6 +42,7 @@ struct Restaurante
        char tipo_culinaria[30];
        char telefone_restaurante[20];
        char cnpj[18];
+       struct HorarioDia horarios[7]; /* 0=Seg, 1=Ter, 2=Qua, 3=Qui, 4=Sex, 5=Sab, 6=Dom */
        char horario_abertura[6];
        char horario_fechamento[6];
        char horario_abertura_fds[6];
@@ -57,6 +63,8 @@ struct Cliente
        int cadastro;
        int restaurantes_favoritos[10];
        int num_favoritos;
+       int produtos_favoritos[50];
+       int num_produtos_favoritos;
 };
 
 struct Produto
@@ -101,17 +109,6 @@ struct Pedido
        char data_hora[20];
 };
 
-struct HorariosSemana
-{
-       char segunda[13];
-       char terca[13];
-       char quarta[13];
-       char quinta[13];
-       char sexta[13];
-       char sabado[13];
-       char domingo[13];
-};
-
 // Prototipos dos Procedimentos
 void menu_ui();
 void login_ui();
@@ -124,12 +121,12 @@ void login_error_ui();
 void endereco_ui();
 void cadastro_feito_ui();
 void home_cliente_ui(); // struct Cliente *cliente
-void pedidos_cliente_ui();
+void pedidos_cliente_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente);
 void pagina_mcdonalds_ui();
 void pagina_cocobambu_ui();
 void pagina_dominos_ui();
 void restaurante_dashboard_ui(struct Cliente *cliente);
-void restaurante_pedidos_ui();
+void restaurante_pedidos_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente);
 void restaurante_perfil_ui(struct Cliente *cliente);
 void restaurante_configuracoes_ui();
 void perfil_cliente_ui(struct Cliente *cliente);
@@ -155,10 +152,12 @@ void listar_produtos_ui(struct Produto produtos[], int num_produtos);
 void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos);
 void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos[], int num_produtos);
 void visualizar_carrinho_ui(struct Carrinho *carrinho);
+void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos);
+void listar_produtos_favoritos_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos);
 int menu_carrinho();
 void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, struct Pedido pedidos[], int *num_pedidos, struct Produto produtos[], int num_produtos);
-void adicionar_favorito_ui(struct Cliente *cliente);
-void listar_favoritos_ui(struct Cliente *cliente);
+void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[]);
+void listar_favoritos_ui(struct Cliente *cliente, struct Produto produtos[]);
 void menu_gerenciar_produtos_ui(struct Produto produtos[], int *num_produtos);
 
 /// Prototipos das Funcoes
@@ -209,6 +208,7 @@ int main()
        memset(&cliente, 0, sizeof(struct Cliente));
        cliente.rest.cadastrado = 0;
        cliente.num_favoritos = 0;
+       cliente.num_produtos_favoritos = 0;
 
        // Inicializa o carrinho
        inicializar_carrinho(&carrinho);
@@ -261,7 +261,6 @@ int main()
                                           do
                                           {
                                                  modo_cliente_ui(&cliente);
-                                                 limparBuffer();
 
                                                  tipo = 0;
                                                  tipo = menu_cliente();
@@ -307,15 +306,16 @@ int main()
                                                                              exibir_produtos_restaurante_ui(produtos, num_produtos);
 
                                                                              printf("\n[1] Adicionar ao Carrinho\n");
-                                                                             printf("[2] Ver Carrinho\n\n");
-                                                                             printf("[3] Voltar\n\n");
+                                                                             printf("[2] Adicionar aos Favoritos\n");
+                                                                             printf("[3] Ver Carrinho\n\n");
+                                                                             printf("[4] Voltar\n\n");
 
                                                                              int opcao_rest_din;
                                                                              printf("Entre o numero desejado: ");
                                                                              if (scanf("%d", &opcao_rest_din) != 1)
                                                                              {
                                                                                     limparBuffer();
-                                                                                    opcao_rest_din = 3;
+                                                                                    opcao_rest_din = 4;
                                                                              }
 
                                                                              switch (opcao_rest_din)
@@ -324,17 +324,20 @@ int main()
                                                                                     adicionar_ao_carrinho_ui(&carrinho, produtos, num_produtos);
                                                                                     break;
                                                                              case 2:
+                                                                                    adicionar_produto_favorito_ui(&cliente, produtos, num_produtos);
+                                                                                    break;
+                                                                             case 3:
                                                                                     do
                                                                                     {
                                                                                            visualizar_carrinho_ui(&carrinho);
-                                                                                           
+
                                                                                            /* Se carrinho esta vazio, sai direto */
                                                                                            if (carrinho.num_itens == 0)
                                                                                            {
                                                                                                   enter_ui();
                                                                                                   break;
                                                                                            }
-                                                                                           
+
                                                                                            int opcao_carr = menu_carrinho();
 
                                                                                            switch (opcao_carr)
@@ -365,7 +368,7 @@ int main()
 
                                                                                     } while (1);
                                                                                     break;
-                                                                             case 3:
+                                                                             case 4:
                                                                                     opcao_rest_din = 5;
                                                                                     break;
                                                                              }
@@ -384,9 +387,8 @@ int main()
                                                         break;
 
                                                  case 2:
-                                                        pedidos_cliente_ui();
-                                                        limparBuffer();
-                                                        getchar();
+                                                        pedidos_cliente_ui(pedidos, num_pedidos, &cliente);
+                                                        enter_ui();
                                                         break;
 
                                                  case 3:
@@ -414,32 +416,32 @@ int main()
                                                                              switch (opcao_editar)
                                                                              {
                                                                              case 1:
+                                                                             {
+                                                                                    int i = 0, ultimo_espaco = 0;
+                                                                                    printf("Insira o novo nome: ");
+                                                                                    scanf(" %[^\n]s", cliente.nome);
+                                                                                    cliente.nome[0] = toupper(cliente.nome[0]);
+
+                                                                                    for (i = 0; i < (int)strlen(cliente.nome); i++)
                                                                                     {
-                                                                                           int i = 0, ultimo_espaco = 0;
-                                                                                           printf("Insira o novo nome: ");
-                                                                                           scanf(" %[^\n]s", cliente.nome);
-                                                                                           cliente.nome[0] = toupper(cliente.nome[0]);
-
-                                                                                           for (i = 0; i < (int)strlen(cliente.nome); i++)
+                                                                                           if (cliente.nome[i] == ' ')
                                                                                            {
-                                                                                                  if (cliente.nome[i] == ' ')
-                                                                                                  {
-                                                                                                         ultimo_espaco = i + 1;
-                                                                                                  }
+                                                                                                  ultimo_espaco = i + 1;
                                                                                            }
-
-                                                                                           if (ultimo_espaco > 0)
-                                                                                           {
-                                                                                                  cliente.nome[ultimo_espaco] =
-                                                                                                      toupper(cliente.nome[ultimo_espaco]);
-                                                                                           }
-
-                                                                                           printf("O nome foi alterado com sucesso!\n Novo nome: "
-                                                                                                  "%s\n",
-                                                                                                  cliente.nome);
-                                                                                           enter_ui();
                                                                                     }
-                                                                                    break;
+
+                                                                                    if (ultimo_espaco > 0)
+                                                                                    {
+                                                                                           cliente.nome[ultimo_espaco] =
+                                                                                               toupper(cliente.nome[ultimo_espaco]);
+                                                                                    }
+
+                                                                                    printf("O nome foi alterado com sucesso!\n Novo nome: "
+                                                                                           "%s\n",
+                                                                                           cliente.nome);
+                                                                                    enter_ui();
+                                                                             }
+                                                                             break;
 
                                                                              case 2:
                                                                                     printf("Insira o novo email: ");
@@ -497,31 +499,54 @@ int main()
                                                                       enter_ui();
                                                                       break;
 
+                                                               // =====================================================
                                                                case 3:
-                                                                      clearScreen();
-                                                                      printf("+-----------------------------------------------------------------------+\n");
-                                                                      printf("|                         FAVORITOS                                     |\n");
-                                                                      printf("+-----------------------------------------------------------------------+\n\n");
-                                                                      printf("[1] >> Ver Favoritos\n");
-                                                                      printf("[2] >> Adicionar Favorito\n");
-                                                                      printf("[3] >> Voltar\n\n");
-
-                                                                      int opcao_fav;
-                                                                      printf("Escolha: ");
-                                                                      if (scanf("%d", &opcao_fav) == 1)
+                                                               {
+                                                                      int opcao_fav = 0;
+                                                                      do
                                                                       {
-                                                                             if (opcao_fav == 1)
-                                                                             {
-                                                                                    listar_favoritos_ui(&cliente);
-                                                                             }
-                                                                             else if (opcao_fav == 2)
-                                                                             {
-                                                                                    adicionar_favorito_ui(&cliente);
-                                                                             }
-                                                                      }
-                                                                      break;
+                                                                             clearScreen();
+                                                                             printf("+-----------------------------------------------------------------------+\n");
+                                                                             printf("|                         FAVORITOS                                     |\n");
+                                                                             printf("+-----------------------------------------------------------------------+\n\n");
+                                                                             printf("[1] >> Ver Restaurantes Favoritos\n");
+                                                                             printf("[2] >> Ver Produtos Favoritos\n");
+                                                                             printf("[3] >> Adicionar Restaurante Favorito\n");
+                                                                             printf("[4] >> Adicionar Produto Favorito\n");
+                                                                             printf("[5] >> Voltar\n\n");
 
-                                                               case 4:
+                                                                             printf("Escolha: ");
+                                                                             if (scanf("%d", &opcao_fav) == 1)
+                                                                             {
+                                                                                    switch (opcao_fav)
+                                                                                    {
+                                                                                    case 1:
+                                                                                           listar_favoritos_ui(&cliente, produtos);
+                                                                                           break;
+                                                                                    case 2:
+                                                                                           listar_produtos_favoritos_ui(&cliente, produtos, num_produtos);
+                                                                                           break;
+                                                                                    case 3:
+                                                                                           adicionar_favorito_ui(&cliente, produtos);
+                                                                                           break;
+                                                                                    case 4:
+                                                                                           adicionar_produto_favorito_ui(&cliente, produtos, num_produtos);
+                                                                                           break;
+                                                                                    case 5:
+                                                                                           break;
+                                                                                    default:
+                                                                                           printf("\nOpcao invalida!\n");
+                                                                                           enter_ui();
+                                                                                    }
+                                                                             }
+                                                                             else
+                                                                             {
+                                                                                    limparBuffer();
+                                                                                    opcao_fav = 0;
+                                                                             }
+                                                                      } while (opcao_fav != 5);
+                                                               }
+                                                               break;                                                               case 4:
                                                                       excluir_conta_cliente_ui();
                                                                       if (excluir_conta(&cliente) == 1)
                                                                       {
@@ -529,9 +554,7 @@ int main()
                                                                              tipo = 4;      // Sair do menu cliente tambem
                                                                              tipo_menu = 4; // Sair do menu tipo usuario
                                                                       }
-                                                                      printf("\n>> Pressione ENTER para continuar...");
-                                                                      limparBuffer();
-                                                                      getchar();
+                                                                      enter_ui();
                                                                       break;
 
                                                                case 5:
@@ -568,6 +591,9 @@ int main()
 
                                           do
                                           {
+                                                 clearScreen();
+                                                 modo_restaurante_ui(&cliente);
+
                                                  tipo = 0;
                                                  tipo = menu_restaurante();
 
@@ -579,7 +605,7 @@ int main()
                                                         break;
 
                                                  case 2:
-                                                        restaurante_pedidos_ui();
+                                                        restaurante_pedidos_ui(pedidos, num_pedidos, &cliente);
                                                         enter_ui();
                                                         break;
 
@@ -601,8 +627,6 @@ int main()
                                                                case 1:
                                                                       dados_restaurante_ui();
                                                                       dados_gerais_restaurante_ui(&cliente);
-                                                                      limparBuffer();
-                                                                      getchar();
                                                                       break;
 
                                                                case 2:
@@ -663,44 +687,69 @@ int main()
                                                                       horario_funcionamento_ui(&cliente);
 
                                                                       tipo = 0;
-                                                                      tipo = menu_editar_horario_restaurante();
+                                                                      printf("\n+------------------------------------------------+\n");
+                                                                      printf("| EDITAR HORARIOS                                |\n");
+                                                                      printf("+------------------------------------------------+\n");
+                                                                      printf("| [1] Segunda-feira                              |\n");
+                                                                      printf("| [2] Terca-feira                                |\n");
+                                                                      printf("| [3] Quarta-feira                               |\n");
+                                                                      printf("| [4] Quinta-feira                               |\n");
+                                                                      printf("| [5] Sexta-feira                                |\n");
+                                                                      printf("| [6] Sabado                                     |\n");
+                                                                      printf("| [7] Domingo                                    |\n");
+                                                                      printf("| [8] Editar todos os dias                       |\n");
+                                                                      printf("| [9] Voltar                                     |\n");
+                                                                      printf("+------------------------------------------------+\n");
+                                                                      printf("Escolha uma opcao: ");
+                                                                      scanf("%d", &tipo);
+                                                                      limparBuffer();
 
-                                                                      switch (tipo)
-                                                                      {
-                                                                      case 1:
-                                                                             editar_horario_semana_ui();
-                                                                             printf("Insira o novo horario de abertura (HH:MM): ");
-                                                                             scanf(" %5s", cliente.rest.horario_abertura);
+                                                                      if (tipo >= 1 && tipo <= 7) {
+                                                                             const char* dias[7] = {"Segunda-feira", "Terca-feira", "Quarta-feira", 
+                                                                                                    "Quinta-feira", "Sexta-feira", "Sabado", "Domingo"};
+                                                                             int dia = tipo - 1;
+                                                                             
+                                                                             printf("\n+------------------------------------------------+\n");
+                                                                             printf("| EDITAR HORARIO - %s%-*s|\n", dias[dia], 
+                                                                                    (int)(32 - strlen(dias[dia])), "");
+                                                                             printf("+------------------------------------------------+\n");
+                                                                             printf("Horario atual: %s - %s\n", 
+                                                                                    cliente.rest.horarios[dia].abertura,
+                                                                                    cliente.rest.horarios[dia].fechamento);
+                                                                             
+                                                                             printf("\nInsira o novo horario de abertura (HH:MM): ");
+                                                                             scanf(" %5s", cliente.rest.horarios[dia].abertura);
 
                                                                              printf("Insira o novo horario de fechamento (HH:MM): ");
-                                                                             scanf(" %5s", cliente.rest.horario_fechamento);
+                                                                             scanf(" %5s", cliente.rest.horarios[dia].fechamento);
 
-                                                                             printf("\nHorarios da semana atualizados com sucesso!\n");
+                                                                             printf("\nHorario de %s atualizado com sucesso!\n", dias[dia]);
                                                                              printf("Novo horario: %s - %s\n",
-                                                                                    cliente.rest.horario_abertura,
-                                                                                    cliente.rest.horario_fechamento);
-                                                                             tipo = enter_ui();
-                                                                             break;
+                                                                                    cliente.rest.horarios[dia].abertura,
+                                                                                    cliente.rest.horarios[dia].fechamento);
+                                                                             enter_ui();
+                                                                      }
+                                                                      else if (tipo == 8) {
+                                                                             printf("\n+------------------------------------------------+\n");
+                                                                             printf("| EDITAR TODOS OS HORARIOS                       |\n");
+                                                                             printf("+------------------------------------------------+\n");
+                                                                             
+                                                                             printf("Insira o horario de abertura (HH:MM): ");
+                                                                             char abertura[6], fechamento[6];
+                                                                             scanf(" %5s", abertura);
 
-                                                                      case 2:
-                                                                             editar_horario_fds_ui();
-                                                                             printf("Insira o novo horario de abertura (HH:MM): ");
-                                                                             scanf(" %5s", cliente.rest.horario_abertura_fds);
+                                                                             printf("Insira o horario de fechamento (HH:MM): ");
+                                                                             scanf(" %5s", fechamento);
 
-                                                                             printf("Insira o novo horario de fechamento (HH:MM): ");
-                                                                             scanf(" %5s", cliente.rest.horario_fechamento_fds);
+                                                                             int d = 0;
+                                                                             for (d = 0; d < 7; d++) {
+                                                                                    strcpy(cliente.rest.horarios[d].abertura, abertura);
+                                                                                    strcpy(cliente.rest.horarios[d].fechamento, fechamento);
+                                                                             }
 
-                                                                             printf("\nHorarios do final de semana atualizados com "
-                                                                                    "sucesso!\n");
-                                                                             printf("Novo horario: %s - %s\n",
-                                                                                    cliente.rest.horario_abertura_fds,
-                                                                                    cliente.rest.horario_fechamento_fds);
-                                                                             tipo = enter_ui();
-                                                                             break;
-
-                                                                      case 3:
-
-                                                                             break;
+                                                                             printf("\nTodos os horarios foram atualizados com sucesso!\n");
+                                                                             printf("Novo horario: %s - %s\n", abertura, fechamento);
+                                                                             enter_ui();
                                                                       }
                                                                       break;
 
@@ -709,8 +758,6 @@ int main()
                                                                       break;
 
                                                                case 5:
-                                                                      clearScreen();
-                                                                      modo_restaurante_ui(&cliente);
                                                                       break;
                                                                default:
                                                                       opcao_invalida_ui();
@@ -726,7 +773,6 @@ int main()
                                                         opcao_invalida_ui();
                                                  }
                                           } while (tipo != 5);
-                                          // tipo = 0;
                                           break;
 
                                    case 4:
@@ -875,7 +921,7 @@ int menu_editar_horario_restaurante()
        int cont = 0;
        int tipo = 0;
 
-       printf("[1] >> Horario da semanda (Seg-Sex)\n");
+       printf("[1] >> Horario da semana (Seg-Sex)\n");
        printf("[2] >> Horario do final de semana (Sab-Dom)\n\n");
 
        printf("[3] >> Voltar\n");
@@ -1228,6 +1274,7 @@ int cadastro_restaurante(struct Cliente *cliente)
        char abertura_fds[6];
        char fechamento_fds[6];
        int primeiro_espaco = 0, i = 0, cont = 0;
+       int d = 0;
 
        cadastro_restaurante_ui();
 
@@ -1275,17 +1322,36 @@ int cadastro_restaurante(struct Cliente *cliente)
        printf("Digite o CNPJ: ");
        scanf(" %s", cnpj);
 
-       printf("Digite o horario de abertura semana (HH:MM): ");
-       scanf(" %s", abertura);
+       char *dias_semana[] =
+           {
+               "Segunda-feira",
+               "Terca-feira",
+               "Quarta-feira",
+               "Quinta-feira",
+               "Sexta-feira",
+               "Sabado",
+               "Domingo"};
 
-       printf("Digite o horario de fechamento semana(HH:MM): ");
-       scanf(" %s", fechamento);
+       printf("\n+------------------------------------------------------------------+\n");
+       printf("|          CADASTRO DE HORARIOS POR DIA DA SEMANA                  |\n");
+       printf("+------------------------------------------------------------------+\n\n");
 
-       printf("Digite o horario de abertura fim de semana (HH:MM): ");
-       scanf(" %s", abertura_fds);
+       for (d = 0; d < 7; d++)
+       {
+              printf("--- %s ---\n\n", dias_semana[d]);
+              printf("Horario de abertura (HH:MM): ");
+              scanf(" %5s", cliente->rest.horarios[d].abertura);
 
-       printf("Digite o horario de fechamento fim de semana (HH:MM): ");
-       scanf(" %s", fechamento_fds);
+              printf("Horario de fechamento (HH:MM): ");
+              scanf(" %5s", cliente->rest.horarios[d].fechamento);
+              printf("\n");
+       }
+
+       /* Copia os horarios de segunda para os campos antigos (compatibilidade) */
+       strcpy(cliente->rest.horario_abertura, cliente->rest.horarios[0].abertura);
+       strcpy(cliente->rest.horario_fechamento, cliente->rest.horarios[0].fechamento);
+       strcpy(cliente->rest.horario_abertura_fds, cliente->rest.horarios[5].abertura);
+       strcpy(cliente->rest.horario_fechamento_fds, cliente->rest.horarios[5].fechamento);
 
        strcpy(cliente->rest.nome_restaurante, nome);
        strcpy(cliente->rest.tipo_culinaria, tipo);
@@ -1593,11 +1659,7 @@ int le_valida_verificacao(struct Cliente *cliente)
 int enter_ui()
 {
        printf("\n>> Pressione ENTER para continuar...");
-       // Limpa qualquer caractere pendente no buffer
-       int c;
-       while ((c = getchar()) != '\n' && c != EOF)
-              ;
-       // Agora aguarda o ENTER do usuário
+       limparBuffer();
        getchar();
        return 0;
 }
@@ -1818,7 +1880,6 @@ void modo_select_entrada_ui()
 
 void modo_cliente_ui(struct Cliente *cliente)
 {
-
        clearScreen();
        printf("+--------------------------------------------------------------------"
               "-----+\n");
@@ -1878,7 +1939,7 @@ void pagina_cocobambu_ui()
        printf("\n");
        printf("   +-----------------------------------------------------------------------+\n");
        printf("   |                                                                       |\n");
-       printf("   |                    '      Coco Bambu                                   |\n");
+       printf("   |                          Coco Bambu                                   |\n");
        printf("   |                                                                       |\n");
        printf("   +-----------------------------------------------------------------------+\n");
        printf("   |  Coco Bambu                                                           |\n");
@@ -1948,7 +2009,7 @@ void modo_restaurante_ui(struct Cliente *cliente)
               "-+  \n\n");
 }
 
-void pedidos_cliente_ui()
+void pedidos_cliente_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente)
 {
        clearScreen();
        printf("+--------------------------------------------------------------------"
@@ -1961,11 +2022,49 @@ void pedidos_cliente_ui()
               "     |\n");
        printf("+--------------------------------------------------------------------"
               "-----+\n\n");
-       printf("                         Seus pedidos recentes:                      "
-              "      \n\n");
-       printf("  "
-              "+--------------------------------------------------------------------"
-              "-+  \n\n");
+       
+       if (num_pedidos == 0)
+       {
+              printf("  Voce ainda nao fez nenhum pedido.\n\n");
+              return;
+       }
+
+       int i, j;
+       int pedidos_cliente = 0;
+       
+       for (i = 0; i < num_pedidos; i++)
+       {
+              /* Verifica se o pedido pertence ao cliente logado */
+              if (strcmp(pedidos[i].cpf_cliente, cliente->cpf) == 0)
+              {
+                     pedidos_cliente++;
+                     
+                     printf("  +------------------------------------------------------------------+\n");
+                     printf("  | Pedido #%d - %-53s |\n", pedidos[i].id, pedidos[i].status);
+                     printf("  +------------------------------------------------------------------+\n");
+                     printf("  | Restaurante: %-51s |\n", pedidos[i].nome_restaurante);
+                     printf("  | Data/Hora: %-53s |\n", pedidos[i].data_hora);
+                     printf("  | Itens:                                                           |\n");
+                     
+                     for (j = 0; j < pedidos[i].num_itens; j++)
+                     {
+                            printf("  |   - %dx %-37s R$ %-8.2f |\n",
+                                   pedidos[i].itens[j].quantidade,
+                                   pedidos[i].itens[j].nome_produto,
+                                   pedidos[i].itens[j].subtotal);
+                     }
+                     
+                     printf("  | Total: R$ %-57.2f |\n", pedidos[i].valor_total);
+                     printf("  | Forma de Pagamento: %-44s |\n", pedidos[i].forma_pagamento);
+                     printf("  | Endereco: %-54s |\n", pedidos[i].endereco_entrega.endereco);
+                     printf("  +------------------------------------------------------------------+\n\n");
+              }
+       }
+       
+       if (pedidos_cliente == 0)
+       {
+              printf("  Voce ainda nao fez nenhum pedido.\n\n");
+       }
 }
 
 void perfil_cliente_ui(struct Cliente *cliente)
@@ -2058,63 +2157,183 @@ void excluir_conta_cliente_ui()
 void restaurante_dashboard_ui(struct Cliente *cliente)
 {
        clearScreen();
-       printf("+--------------------------------------------------------------------"
-              "-----+\n");
-       printf("|                                                                    "
-              "     |\n");
-       printf("|                   R E S T A U R A N T E   D A S H B O A R D        "
-              "     |\n");
-       printf("|                                                                    "
-              "     |\n");
-       printf("+--------------------------------------------------------------------"
-              "-----+\n\n");
-       printf("                       Visao geral do restaurante: %s                "
-              "      \n\n",
+       printf("+--------------------------------------------------------------------------+\n");
+       printf("|                                                                          |\n");
+       printf("|                  R E S T A U R A N T E   D A S H B O A R D               |\n");
+       printf("|                                                                          |\n");
+       printf("+--------------------------------------------------------------------------+\n\n");
+
+       // Status do restaurante
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  STATUS DO RESTAURANTE                                               |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Restaurante: %-54s |\n", cliente->rest.nome_restaurante);
+       printf("  |  Status: %-59s |\n",
               cliente->rest.status == 'a' ? "Aberto" : "Fechado");
-       printf("  "
-              "+--------------------------------------------------------------------"
-              "-+  \n\n");
+       printf("  |  Tipo de Culinaria: %-48s |\n", cliente->rest.tipo_culinaria);
+       printf("  |  CNPJ: %-62s |\n", cliente->rest.cnpj);
+       printf("  |  Telefone: %-59s |\n", cliente->rest.telefone_restaurante);
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       // Estatísticas do dia
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  ESTATISTICAS DO DIA                                                 |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Pedidos Hoje: 12                                                    |\n");
+       printf("  |  Pedidos Pendentes: 3                                                |\n");
+       printf("  |  Pedidos Concluidos: 9                                               |\n");
+       printf("  |  Faturamento Hoje: R$ 456,80                                         |\n");
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       // Estatísticas gerais
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  ESTATISTICAS GERAIS                                                 |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Total de Pedidos: 247                                               |\n");
+       printf("  |  Avaliacao Media: 4.5/5.0                                            |\n");
+       printf("  |  Faturamento Total: R$ 8.934,50                                      |\n");
+       printf("  |  Clientes Ativos: 89                                                 |\n");
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       // Horário de funcionamento
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  HORARIO DE FUNCIONAMENTO                                            |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+
+       char *dias_dashboard[] = {"Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"};
+       int i;
+       for (i = 0; i < 7; i++)
+       {
+              printf("  |  %-10s: %s - %-48s |\n", dias_dashboard[i],
+                     cliente->rest.horarios[i].abertura,
+                     cliente->rest.horarios[i].fechamento);
+       }
+       printf("  +----------------------------------------------------------------------+\n\n");
 }
 
-void restaurante_pedidos_ui()
+void restaurante_pedidos_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente)
 {
        clearScreen();
-       printf("+--------------------------------------------------------------------"
-              "-----+\n");
-       printf("|                                                                    "
-              "     |\n");
-       printf("|                   R E S T A U R A N T E   P E D I D O S            "
-              "     |\n");
-       printf("|                                                                    "
-              "     |\n");
-       printf("+--------------------------------------------------------------------"
-              "-----+\n\n");
-       printf("                         Pedidos recebidos:                          "
-              "      \n\n");
-       printf("  "
-              "+--------------------------------------------------------------------"
-              "-+  \n\n");
+       printf("+--------------------------------------------------------------------------+\n");
+       printf("|                                                                          |\n");
+       printf("|                  R E S T A U R A N T E   P E D I D O S                   |\n");
+       printf("|                                                                          |\n");
+       printf("+--------------------------------------------------------------------------+\n\n");
+
+       if (num_pedidos == 0)
+       {
+              printf("  +----------------------------------------------------------------------+\n");
+              printf("  |  Nenhum pedido recebido ainda.                                       |\n");
+              printf("  +----------------------------------------------------------------------+\n\n");
+              return;
+       }
+
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  PEDIDOS EM ANDAMENTO                                                |\n");
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       int i, j;
+       float valor_total_pedidos = 0;
+       
+       for (i = 0; i < num_pedidos; i++)
+       {
+              printf("  +----------------------------------------------------------------------+\n");
+              printf("  | Pedido #%d - %-58s |\n", pedidos[i].id, pedidos[i].status);
+              printf("  +----------------------------------------------------------------------+\n");
+              printf("  | Cliente: %-63s |\n", pedidos[i].cpf_cliente);
+              printf("  | Horario: %-63s |\n", pedidos[i].data_hora);
+              printf("  | Itens:                                                               |\n");
+              
+              for (j = 0; j < pedidos[i].num_itens; j++)
+              {
+                     printf("  |   - %dx %-42s R$ %-8.2f |\n", 
+                            pedidos[i].itens[j].quantidade,
+                            pedidos[i].itens[j].nome_produto,
+                            pedidos[i].itens[j].subtotal);
+              }
+              
+              printf("  | Total: R$ %-62.2f |\n", pedidos[i].valor_total);
+              printf("  | Forma de Pagamento: %-50s |\n", pedidos[i].forma_pagamento);
+              printf("  +----------------------------------------------------------------------+\n\n");
+              
+              valor_total_pedidos += pedidos[i].valor_total;
+       }
+
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  RESUMO                                                              |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Total de Pedidos Ativos: %-46d |\n", num_pedidos);
+       printf("  |  Valor Total: R$ %-55.2f |\n", valor_total_pedidos);
+       printf("  |  Tempo Medio de Preparo: 25 minutos                                  |\n");
+       printf("  +----------------------------------------------------------------------+\n\n");
 }
 
 void restaurante_perfil_ui(struct Cliente *cliente)
 {
        clearScreen();
-       printf("+--------------------------------------------------------------------"
-              "-----+\n");
-       printf("|                                                                    "
-              "     |\n");
-       printf("|                 R E S T A U R A N T E   P E R F I L                "
-              "     |\n");
-       printf("|                                                                    "
-              "     |\n");
-       printf("+--------------------------------------------------------------------"
-              "-----+\n\n");
-       printf("                 Nome do Restaurante:%s | Email:%s                   "
-              "      \n\n",
-              cliente->nome, cliente->email);
-       printf("  "
-              "+--------------------------------------------------------------------"
-              "-+  \n\n");
+       printf("+--------------------------------------------------------------------------+\n");
+       printf("|                                                                          |\n");
+       printf("|                  R E S T A U R A N T E   P E R F I L                     |\n");
+       printf("|                                                                          |\n");
+       printf("+--------------------------------------------------------------------------+\n\n");
+
+       // Informações Básicas
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  INFORMACOES BASICAS                                                 |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Nome: %-64s |\n", cliente->rest.nome_restaurante);
+       printf("  |  Email: %-63s |\n", cliente->email);
+       printf("  |  Telefone: %-61s |\n", cliente->rest.telefone_restaurante);
+       printf("  |  Tipo de Culinaria: %-52s |\n", cliente->rest.tipo_culinaria);
+       printf("  |  CNPJ: %-63s |\n", cliente->rest.cnpj);
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       // Endereço
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  ENDERECO                                                            |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Rua: %-65s |\n", cliente->rest.end.endereco);
+       printf("  |  Bairro: %-62s |\n", cliente->rest.end.logradouro);
+       printf("  |  Numero: %-62d |\n", cliente->rest.end.numero);
+       printf("  |  CEP: %-64s |\n", cliente->rest.end.cep);
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       // Horário de Funcionamento
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  HORARIO DE FUNCIONAMENTO                                            |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+
+       char *dias_perfil[] = {"Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"};
+       int j;
+       for (j = 0; j < 7; j++)
+       {
+              printf("  |  %-10s: %s - %-48s |\n", dias_perfil[j],
+                     cliente->rest.horarios[j].abertura,
+                     cliente->rest.horarios[j].fechamento);
+       }
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       // Status e Estatísticas
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  STATUS E ESTATISTICAS                                               |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Status Atual: %-58s |\n",
+              cliente->rest.status == 'a' ? "Aberto" : "Fechado");
+       printf("  |  Avaliacao Media: 4.5/5.0                                            |\n");
+       printf("  |  Total de Avaliacoes: 247                                            |\n");
+       printf("  |  Taxa de Aceitacao: 98%%                                              |\n");
+       printf("  |  Tempo Medio de Entrega: 35 minutos                                  |\n");
+       printf("  +----------------------------------------------------------------------+\n\n");
+
+       // Informações Adicionais
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  INFORMACOES ADICIONAIS                                              |\n");
+       printf("  +----------------------------------------------------------------------+\n");
+       printf("  |  Total de Produtos Cadastrados: 45                                   |\n");
+       printf("  |  Total de Clientes: 156                                              |\n");
+       printf("  |  Faturamento Mensal: R$ 23.456,78                                    |\n");
+       printf("  |  Data de Cadastro: 15/01/2024                                        |\n");
+       printf("  +----------------------------------------------------------------------+\n\n");
 }
 
 void restaurante_configuracoes_ui()
@@ -2188,12 +2407,18 @@ void horario_funcionamento_ui(struct Cliente *cliente)
               "     |\n");
        printf("+--------------------------------------------------------------------"
               "-----+\n\n");
-       printf("                       Segunda - Sexta: %s - %s               \n",
-              cliente->rest.horario_abertura, cliente->rest.horario_fechamento);
-       printf("                       Sabado - Domingo: %s - %s               \n\n",
-              cliente->rest.horario_abertura_fds,
-              cliente->rest.horario_fechamento_fds);
-       printf("  "
+
+       char *dias_horario[] = {"Segunda-feira", "Terca-feira", "Quarta-feira",
+                               "Quinta-feira", "Sexta-feira", "Sabado", "Domingo"};
+       int k;
+       for (k = 0; k < 7; k++)
+       {
+              printf("  %-15s: %s - %s\n", dias_horario[k],
+                     cliente->rest.horarios[k].abertura,
+                     cliente->rest.horarios[k].fechamento);
+       }
+
+       printf("\n  "
               "+--------------------------------------------------------------------"
               "-+  \n\n");
 }
@@ -2259,11 +2484,16 @@ void dados_gerais_restaurante_ui(struct Cliente *cliente)
        printf("  "
               "+--------------------------------------------------------------------"
               "-+\n");
-       printf("  | Segunda - Sexta: %s - %-42s |\n", cliente->rest.horario_abertura,
-              cliente->rest.horario_fechamento);
-       printf("  | Sabado - Domingo: %s - %-41s |\n",
-              cliente->rest.horario_abertura_fds,
-              cliente->rest.horario_fechamento_fds);
+
+       char *dias[] = {"Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"};
+       int i;
+       for (i = 0; i < 7; i++)
+       {
+              printf("  | %-15s: %s - %-42s |\n", dias[i],
+                     cliente->rest.horarios[i].abertura,
+                     cliente->rest.horarios[i].fechamento);
+       }
+
        printf("  "
               "+--------------------------------------------------------------------"
               "-+\n\n");
@@ -2553,8 +2783,8 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
        int i;
        for (i = 0; i < num_produtos; i++)
        {
-              printf("[%d] %s - R$ %.2f (Estoque: %d) %s\n", 
-                     produtos[i].id, produtos[i].nome, produtos[i].preco, 
+              printf("[%d] %s - R$ %.2f (Estoque: %d) %s\n",
+                     produtos[i].id, produtos[i].nome, produtos[i].preco,
                      produtos[i].quantidade, produtos[i].ativo ? "[Ativo]" : "[Inativo]");
        }
 
@@ -2591,7 +2821,7 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 
        clearScreen();
        printf("+-----------------------------------------------------------------------+\n");
-       printf("|                    EDITANDO: %s                                       |\n", produtos[encontrado].nome);
+       printf("|                    EDITANDO: %-20s                                    |\n", produtos[encontrado].nome);
        printf("+-----------------------------------------------------------------------+\n\n");
 
        printf("Deixe em branco para manter o valor atual\n\n");
@@ -2671,8 +2901,8 @@ void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos)
        int i;
        for (i = 0; i < num_produtos; i++)
        {
-              printf("[%d] %s - %s\n", 
-                     produtos[i].id, produtos[i].nome, 
+              printf("[%d] %s - %s\n",
+                     produtos[i].id, produtos[i].nome,
                      produtos[i].ativo ? "[ATIVO]" : "[INATIVO]");
        }
 
@@ -2710,7 +2940,7 @@ void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos)
        /* Alterna o status */
        produtos[encontrado].ativo = !produtos[encontrado].ativo;
 
-       printf("\n✓ Produto '%s' agora esta: %s\n", 
+       printf("\n✓ Produto '%s' agora esta: %s\n",
               produtos[encontrado].nome,
               produtos[encontrado].ativo ? "ATIVO" : "INATIVO");
        enter_ui();
@@ -2853,7 +3083,7 @@ void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
 void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos[], int num_produtos)
 {
        clearScreen();
-       
+
        if (num_produtos == 0)
        {
               printf("\nNenhum produto disponivel para adicionar.\n");
@@ -2866,7 +3096,7 @@ void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos
        printf("+-----------------------------------------------------------------------+\n\n");
 
        printf("Produtos disponíveis:\n\n");
-       
+
        /* Lista os produtos disponíveis */
        int i;
        for (i = 0; i < num_produtos; i++)
@@ -2989,7 +3219,7 @@ int menu_carrinho()
 void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, struct Pedido pedidos[], int *num_pedidos, struct Produto produtos[], int num_produtos)
 {
        (void)num_produtos; // Parametro usado indiretamente no loop de atualizacao de estoque
-       
+
        if (carrinho->num_itens == 0)
        {
               printf("\nCarrinho vazio! Adicione produtos antes de finalizar.\n");
@@ -3078,15 +3308,13 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, str
               printf("Numero do pedido: #%d\n", novo_pedido.id);
               printf("Status: %s\n\n", novo_pedido.status);
 
-              /* Atualiza o estoque dos produtos */
               for (i = 0; i < carrinho->num_itens; i++)
               {
                      int id_produto = carrinho->itens[i].id_produto;
                      int qtd_comprada = carrinho->itens[i].quantidade;
-                     
-                     /* Busca o produto e atualiza o estoque */
+
                      int j;
-                     for (j = 0; j < 100; j++) /* num_produtos maximo */
+                     for (j = 0; j < 100; j++)
                      {
                             if (produtos[j].id == id_produto)
                             {
@@ -3108,8 +3336,11 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, str
 
 // ==================== FUNCOES DE FAVORITOS ====================
 
-void adicionar_favorito_ui(struct Cliente *cliente)
+void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[])
 {
+       int i;
+       int opcao;
+
        if (cliente->num_favoritos >= 10)
        {
               printf("\nLimite de favoritos atingido!\n");
@@ -3117,13 +3348,14 @@ void adicionar_favorito_ui(struct Cliente *cliente)
               return;
        }
 
-       printf("\nAdicionar restaurante aos favoritos:\n");
-       printf("[1] McDonald's\n");
+       clearScreen();
+       printf("+-----------------------------------------------------------------------+\n");
+       printf("|                   ADICIONAR RESTAURANTE FAVORITO                      |\n");
+       printf("+-----------------------------------------------------------------------+\n\n");
+       printf("[1] Mc Donald`s\n");
        printf("[2] Coco Bambu\n");
        printf("[3] Domino's Pizza\n");
-       printf("[4] Restaurante Dinamico\n\n");
-
-       int opcao;
+       printf("[4] %s\n\n", cliente->rest.nome_restaurante);
        printf("Escolha: ");
        if (scanf("%d", &opcao) != 1 || opcao < 1 || opcao > 4)
        {
@@ -3134,7 +3366,6 @@ void adicionar_favorito_ui(struct Cliente *cliente)
        }
 
        /* Verifica se ja esta nos favoritos */
-       int i;
        for (i = 0; i < cliente->num_favoritos; i++)
        {
               if (cliente->restaurantes_favoritos[i] == opcao)
@@ -3152,27 +3383,156 @@ void adicionar_favorito_ui(struct Cliente *cliente)
        enter_ui();
 }
 
-void listar_favoritos_ui(struct Cliente *cliente)
+void listar_favoritos_ui(struct Cliente *cliente, struct Produto produtos[])
 {
+       int i;
+       (void)produtos; /* Parametro nao utilizado */
+
        clearScreen();
        printf("+-----------------------------------------------------------------------+\n");
-       printf("|                    RESTAURANTES FAVORITOS                             |\n");
+       printf("|                              FAVORITOS                                |\n");
        printf("+-----------------------------------------------------------------------+\n\n");
 
        if (cliente->num_favoritos == 0)
        {
-              printf("Nenhum restaurante favorito ainda.\n\n");
+              printf("Nenhum item favorito ainda.\n\n");
               enter_ui();
               return;
        }
 
-       char *nomes[] = {"", "McDonald's", "Coco Bambu", "Domino's Pizza", "Restaurante Dinamico"};
-
-       int i;
+       char *nomes[] = {"", "Mc Donald`s", "Coco Bambu", "Domino's Pizza", "Restaurante Dinamico"};
        for (i = 0; i < cliente->num_favoritos; i++)
        {
               int id = cliente->restaurantes_favoritos[i];
               printf("[%d] %s\n", i + 1, nomes[id]);
+       }
+
+       printf("\n");
+       enter_ui();
+}
+
+// ==================== FUNCOES DE FAVORITOS DE PRODUTOS ====================
+
+void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos)
+{
+       clearScreen();
+
+       if (num_produtos == 0)
+       {
+              printf("\nNenhum produto disponivel.\n");
+              enter_ui();
+              return;
+       }
+
+       if (cliente->num_produtos_favoritos >= 50)
+       {
+              printf("\nLimite de produtos favoritos atingido!\n");
+              enter_ui();
+              return;
+       }
+
+       printf("+-----------------------------------------------------------------------+\n");
+       printf("|                    ADICIONAR PRODUTO AOS FAVORITOS                    |\n");
+       printf("+-----------------------------------------------------------------------+\n\n");
+
+       printf("Produtos disponíveis:\n\n");
+
+       int i;
+       for (i = 0; i < num_produtos; i++)
+       {
+              if (produtos[i].ativo)
+              {
+                     printf("   [ID: %d] %s\n", produtos[i].id, produtos[i].nome);
+                     printf("   R$ %.2f - %s\n", produtos[i].preco, produtos[i].descricao);
+                     printf("   ----------------------------------------------------------------------\n");
+              }
+       }
+
+       int id_produto;
+       printf("\n[0] Voltar\n\n");
+       printf("Digite o ID do produto para adicionar aos favoritos (ou 0 para voltar): ");
+       if (scanf("%d", &id_produto) != 1)
+       {
+              limparBuffer();
+              printf("ID invalido!\n");
+              enter_ui();
+              return;
+       }
+
+       if (id_produto == 0)
+       {
+              return;
+       }
+
+       /* Busca o produto */
+       int encontrado = -1;
+       for (i = 0; i < num_produtos; i++)
+       {
+              if (produtos[i].id == id_produto && produtos[i].ativo)
+              {
+                     encontrado = i;
+                     break;
+              }
+       }
+
+       if (encontrado == -1)
+       {
+              printf("\nProduto nao encontrado ou indisponivel!\n");
+              enter_ui();
+              return;
+       }
+
+       /* Verifica se ja esta nos favoritos */
+       for (i = 0; i < cliente->num_produtos_favoritos; i++)
+       {
+              if (cliente->produtos_favoritos[i] == id_produto)
+              {
+                     printf("\nProduto ja esta nos favoritos!\n");
+                     enter_ui();
+                     return;
+              }
+       }
+
+       cliente->produtos_favoritos[cliente->num_produtos_favoritos] = id_produto;
+       cliente->num_produtos_favoritos++;
+
+       printf("\n+ Produto '%s' adicionado aos favoritos!\n", produtos[encontrado].nome);
+       enter_ui();
+}
+
+void listar_produtos_favoritos_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos)
+{
+       clearScreen();
+       printf("+-----------------------------------------------------------------------+\n");
+       printf("|                        PRODUTOS FAVORITOS                             |\n");
+       printf("+-----------------------------------------------------------------------+\n\n");
+
+       if (cliente->num_produtos_favoritos == 0)
+       {
+              printf("Nenhum produto favorito ainda.\n\n");
+              enter_ui();
+              return;
+       }
+
+       printf("Seus produtos favoritos:\n\n");
+
+       int i, j;
+       for (i = 0; i < cliente->num_produtos_favoritos; i++)
+       {
+              int id_produto = cliente->produtos_favoritos[i];
+              
+              /* Busca o produto no array */
+              for (j = 0; j < num_produtos; j++)
+              {
+                     if (produtos[j].id == id_produto)
+                     {
+                            printf("   [%d] %s\n", i + 1, produtos[j].nome);
+                            printf("   R$ %.2f - %s\n", produtos[j].preco, produtos[j].descricao);
+                            printf("   Estoque: %d unidades\n", produtos[j].quantidade);
+                            printf("   ----------------------------------------------------------------------\n");
+                            break;
+                     }
+              }
        }
 
        printf("\n");
