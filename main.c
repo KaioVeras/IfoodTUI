@@ -1597,6 +1597,8 @@ int enter_ui()
        int c;
        while ((c = getchar()) != '\n' && c != EOF)
               ;
+       // Agora aguarda o ENTER do usuário
+       getchar();
        return 0;
 }
 
@@ -2839,9 +2841,9 @@ void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
                      if (produtos[i].ativo && strcmp(produtos[i].categoria, categorias[cat]) == 0)
                      {
                             printf("   +-----------------------------------------------------------------------+\n");
-                            printf("   |  [%d]  %-58s       |\n", produtos[i].id, produtos[i].nome);
-                            printf("   |       %-58s     |\n", produtos[i].descricao);
-                            printf("   |       R$ %.2f  -  Estoque: %d                                         |\n", produtos[i].preco, produtos[i].quantidade);
+                            printf("   |  [%d]  %-57s       |\n", produtos[i].id, produtos[i].nome);
+                            printf("   |       %-59s     |\n", produtos[i].descricao);
+                            printf("   |       R$ %.2f  -  Estoque: %d                                        |\n", produtos[i].preco, produtos[i].quantidade);
                             printf("   +-----------------------------------------------------------------------+\n\n");
                      }
               }
@@ -2863,6 +2865,21 @@ void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos
        printf("|                    ADICIONAR AO CARRINHO                              |\n");
        printf("+-----------------------------------------------------------------------+\n\n");
 
+       printf("Produtos disponíveis:\n\n");
+       
+       /* Lista os produtos disponíveis */
+       int i;
+       for (i = 0; i < num_produtos; i++)
+       {
+              if (produtos[i].ativo)
+              {
+                     printf("   [ID: %d] %s\n", produtos[i].id, produtos[i].nome);
+                     printf("   R$ %.2f | Estoque: %d\n", produtos[i].preco, produtos[i].quantidade);
+                     printf("   %s\n", produtos[i].descricao);
+                     printf("   ----------------------------------------------------------------------\n");
+              }
+       }
+
        int id_produto, quantidade;
 
        printf("\nDigite o ID do produto: ");
@@ -2876,7 +2893,6 @@ void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos
 
        /* Busca o produto */
        int encontrado = -1;
-       int i;
        for (i = 0; i < num_produtos; i++)
        {
               if (produtos[i].id == id_produto && produtos[i].ativo)
