@@ -1,0 +1,74 @@
+---
+# Configuração baseada no estilo do main.c - IfoodTUI
+Language: Cpp
+BasedOnStyle: LLVM
+
+# === IDENTAÇÃO ===
+IndentWidth: 4
+UseTab: Always
+TabWidth: 4
+IndentCaseLabels: true
+IndentCaseBlocks: false
+IndentPPDirectives: AfterHash
+NamespaceIndentation: None
+
+# === CHAVES ===
+# Chave de abertura na MESMA linha (estilo K&R/Attach)
+BreakBeforeBraces: Attach
+Cpp11BracedListStyle: true
+
+# === LIMITE DE COLUNA ===
+# Sem limite rígido - evita quebras de linha desnecessárias
+ColumnLimit: 0
+
+# === QUEBRAS DE LINHA ===
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: true
+
+# === ESPAÇAMENTO ===
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: false
+SpaceBeforeAssignmentOperators: true
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+SpacesInContainerLiterals: false
+SpaceAfterLogicalNot: false
+SpaceBeforeSquareBrackets: false
+
+# === ALINHAMENTO ===
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: Align
+AlignTrailingComments: true
+AlignEscapedNewlines: Left
+
+# === LINHAS VAZIAS ===
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2
+EmptyLineBeforeAccessModifier: Always
+
+# === PONTEIROS ===
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+# === INCLUDES ===
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
+
+# === CONTINUAÇÃO DE LINHA ===
+ContinuationIndentWidth: 4
+ConstructorInitializerIndentWidth: 4
+
+# === OUTROS ===
+ReflowComments: false
+BreakStringLiterals: false
+InsertBraces: false
+RemoveBracesLLVM: false

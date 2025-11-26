@@ -7,36 +7,32 @@
 
 // Inclusao de bibliotecas especificas para Windows
 #ifdef _WIN32
-#include <fcntl.h>
-#include <io.h>
-#include <windows.h>
+#	include <fcntl.h>
+#	include <io.h>
+#	include <windows.h>
 #endif
 
 // Definicao das Structs
-struct Endereco
-{
+struct Endereco {
 	char endereco[20];
 	char logradouro[10];
 	char cep[11];
 	int numero;
 };
 
-struct Entregador
-{
+struct Entregador {
 	char cpf[11];
 	char tipo_veiculo[10];
 	char placa[8];
 	int idade;
 };
 
-struct HorarioDia
-{
+struct HorarioDia {
 	char abertura[6];
 	char fechamento[6];
 };
 
-struct Restaurante
-{
+struct Restaurante {
 	struct Endereco end;
 	char nome_restaurante[50];
 	char tipo_culinaria[30];
@@ -51,8 +47,7 @@ struct Restaurante
 	int cadastrado;
 };
 
-struct Cliente
-{
+struct Cliente {
 	struct Endereco end;
 	struct Restaurante rest;
 	char nome[30];
@@ -67,8 +62,7 @@ struct Cliente
 	int num_produtos_favoritos;
 };
 
-struct Produto
-{
+struct Produto {
 	int id;
 	char nome[50];
 	char descricao[100];
@@ -78,8 +72,7 @@ struct Produto
 	int ativo;
 };
 
-struct ItemCarrinho
-{
+struct ItemCarrinho {
 	int id_produto;
 	char nome_produto[50];
 	float preco_unitario;
@@ -87,8 +80,7 @@ struct ItemCarrinho
 	float subtotal;
 };
 
-struct Carrinho
-{
+struct Carrinho {
 	struct ItemCarrinho itens[50];
 	int num_itens;
 	float valor_total;
@@ -96,8 +88,7 @@ struct Carrinho
 	char nome_restaurante[50];
 };
 
-struct Pedido
-{
+struct Pedido {
 	int id;
 	char cpf_cliente[11];
 	char nome_restaurante[50];
@@ -154,17 +145,12 @@ void restaurante_dinamico_ui();
 void cadastrar_produto_ui(struct Produto produtos[], int *num_produtos);
 void listar_produtos_ui(struct Produto produtos[], int num_produtos);
 void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos);
-void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos[],
-				  int num_produtos);
+void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos[], int num_produtos);
 void visualizar_carrinho_ui(struct Carrinho *carrinho);
-void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produtos[],
-					int num_produtos);
-void listar_produtos_favoritos_ui(struct Cliente *cliente, struct Produto produtos[],
-				      int num_produtos);
+void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos);
+void listar_produtos_favoritos_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos);
 int menu_carrinho();
-void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
-			    struct Pedido pedidos[], int *num_pedidos, struct Produto produtos[],
-			    int num_produtos);
+void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, struct Pedido pedidos[], int *num_pedidos, struct Produto produtos[], int num_produtos);
 void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[]);
 void listar_favoritos_ui(struct Cliente *cliente, struct Produto produtos[]);
 void menu_gerenciar_produtos_ui(struct Produto produtos[], int *num_produtos);
@@ -194,8 +180,7 @@ int menu_dominos();
 int menu_gerenciar_produtos();
 int menu_carrinho();
 void inicializar_carrinho(struct Carrinho *carrinho);
-void adicionar_item_carrinho(struct Carrinho *carrinho, int id_produto, char nome[], float preco,
-				 int quantidade);
+void adicionar_item_carrinho(struct Carrinho *carrinho, int id_produto, char nome[], float preco, int quantidade);
 void remover_item_carrinho(struct Carrinho *carrinho, int index);
 void limpar_carrinho(struct Carrinho *carrinho);
 float calcular_total_carrinho(struct Carrinho *carrinho);
@@ -203,8 +188,7 @@ void inicializar_produtos_mcdonalds(struct Produto produtos[], int *num_produtos
 void inicializar_produtos_cocobambu(struct Produto produtos[], int *num_produtos);
 void inicializar_produtos_dominos(struct Produto produtos[], int *num_produtos);
 
-int main()
-{
+int main() {
 	configurarAcentuacao();
 	srand(time(NULL)); /* Inicializa o gerador de numeros aleatorios */
 
@@ -238,1296 +222,674 @@ int main()
 	inicializar_produtos_dominos(produtos_dominos, &num_produtos_dominos);
 
 	// Loop do menu
-	do
-	{
+	do {
 		menu_ui();
 		opcao = menu(opcao);
 
-		switch (opcao)
-		{
-		case 1:
-			if (strlen(cliente.nome) != 0)
-			{
-				cadastro_feito_ui();
-				tipo = enter_ui();
-			}
-			else
-			{
-				cadastro(&cliente);
-				endereco(&cliente.end);
-				le_valida_verificacao(&cliente);
-				tipo = enter_ui();
-			}
-			break;
-
-		case 2:
-			if (strlen(cliente.nome) == 0)
-			{
-				clearScreen();
-				login_nao_cadastrado_ui();
-				tipo = enter_ui();
-			}
-			else
-			{
-				if (cliente.cadastro == 0)
-				{
-					logar(&cliente);
+		switch (opcao) {
+			case 1:
+				if (strlen(cliente.nome) != 0) {
+					cadastro_feito_ui();
+					tipo = enter_ui();
+				} else {
+					cadastro(&cliente);
+					endereco(&cliente.end);
+					le_valida_verificacao(&cliente);
+					tipo = enter_ui();
 				}
+				break;
 
-				do
-				{
-					tipo_menu = 0;
-					tipo_menu = menu_tipo();
+			case 2:
+				if (strlen(cliente.nome) == 0) {
+					clearScreen();
+					login_nao_cadastrado_ui();
+					tipo = enter_ui();
+				} else {
+					if (cliente.cadastro == 0) {
+						logar(&cliente);
+					}
 
-					switch (tipo_menu)
-					{
-					case 1:
-						do
-						{
-							modo_cliente_ui(&cliente);
+					do {
+						tipo_menu = 0;
+						tipo_menu = menu_tipo();
 
-							tipo = 0;
-							tipo = menu_cliente();
-
-							switch (tipo)
-							{
+						switch (tipo_menu) {
 							case 1:
-								do
-								{
-									home_cliente_ui(); // &cliente
-									// favoritos_ui(&cliente);
-									opcao_home = menu_home();
+								do {
+									modo_cliente_ui(&cliente);
 
-									switch (opcao_home)
-									{
-									case 1:
-										do
-										{
-											pagina_mcdonalds_ui();
-											opcao_restaurante =
-												menu_mcdonalds();
+									tipo = 0;
+									tipo = menu_cliente();
 
-											if (opcao_restaurante >=
-												    1 &&
-											    opcao_restaurante <=
-												    4)
-											{
-												/* Adiciona
-												 * produto ao
-												 * carrinho */
-												int quantidade;
-												printf("\nQuant"
-													"idade:"
-													" ");
-												if (scanf("%d",
-													   &quantidade) ==
-													    1 &&
-												    quantidade >
-													    0)
-												{
-													/* Verifica
-													 * se
-													 * carrinho
-													 * tem
-													 * produtos
-													 * de
-													 * outro
-													 * restaurante
-													 */
-													if (carrinho.num_itens >
-														    0 &&
-													    strcmp(carrinho
-															    .nome_restaurante,
-														    "McDonald's") !=
-														    0)
-													{
-														printf("\n[AVISO] Seu carrinho possui itens de %s.\n",
-															carrinho
-																.nome_restaurante);
-														printf("Deseja limpar o carrinho e adicionar deste restaurante? (s/n): ");
-														char resposta;
-														scanf(" %c",
-														      &resposta);
-														if (resposta !=
-															    's' &&
-														    resposta !=
-															    'S')
-														{
-															printf("\nItem nao adicionado.\n");
-															limparBuffer();
-															enter_ui();
-															continue;
-														}
-														limpar_carrinho(
-															&carrinho);
-													}
+									switch (tipo) {
+										case 1:
+											do {
+												home_cliente_ui(); // &cliente
+												opcao_home = menu_home();
 
-													strcpy(carrinho
-															.nome_restaurante,
-														"McDonald's");
-													adicionar_item_carrinho(
-														&carrinho,
-														produtos_mcdonalds
-															[opcao_restaurante -
-															 1]
-																.id,
-														produtos_mcdonalds
-															[opcao_restaurante -
-															 1]
-																.nome,
-														produtos_mcdonalds
-															[opcao_restaurante -
-															 1]
-																.preco,
-														quantidade);
-												}
-												else
-												{
-													printf("\nQuantidade invalida!\n");
-												}
-												limparBuffer();
-												enter_ui();
-											}
-										} while (opcao_restaurante !=
-											  5);
-										break;
-
-									case 2:
-										do
-										{
-											pagina_cocobambu_ui();
-											opcao_restaurante =
-												menu_cocobambu();
-
-											if (opcao_restaurante >=
-												    1 &&
-											    opcao_restaurante <=
-												    4)
-											{
-												/* Adiciona
-												 * produto ao
-												 * carrinho */
-												int quantidade;
-												printf("\nQuant"
-													"idade:"
-													" ");
-												if (scanf("%d",
-													   &quantidade) ==
-													    1 &&
-												    quantidade >
-													    0)
-												{
-													/* Verifica
-													 * se
-													 * carrinho
-													 * tem
-													 * produtos
-													 * de
-													 * outro
-													 * restaurante
-													 */
-													if (carrinho.num_itens >
-														    0 &&
-													    strcmp(carrinho
-															    .nome_restaurante,
-														    "Coco Bambu") !=
-														    0)
-													{
-														printf("\n[AVISO] Seu carrinho possui itens de %s.\n",
-															carrinho
-																.nome_restaurante);
-														printf("Deseja limpar o carrinho e adicionar deste restaurante? (s/n): ");
-														char resposta;
-														scanf(" %c",
-														      &resposta);
-														if (resposta !=
-															    's' &&
-														    resposta !=
-															    'S')
-														{
-															printf("\nItem nao adicionado.\n");
-															limparBuffer();
-															enter_ui();
-															continue;
-														}
-														limpar_carrinho(
-															&carrinho);
-													}
-
-													strcpy(carrinho
-															.nome_restaurante,
-														"Coco Bambu");
-													adicionar_item_carrinho(
-														&carrinho,
-														produtos_cocobambu
-															[opcao_restaurante -
-															 1]
-																.id,
-														produtos_cocobambu
-															[opcao_restaurante -
-															 1]
-																.nome,
-														produtos_cocobambu
-															[opcao_restaurante -
-															 1]
-																.preco,
-														quantidade);
-												}
-												else
-												{
-													printf("\nQuantidade invalida!\n");
-												}
-												limparBuffer();
-												enter_ui();
-											}
-										} while (opcao_restaurante !=
-											  5);
-										break;
-
-									case 3:
-										do
-										{
-											pagina_dominos_ui();
-											opcao_restaurante =
-												menu_dominos();
-
-											if (opcao_restaurante >=
-												    1 &&
-											    opcao_restaurante <=
-												    4)
-											{
-												/* Adiciona
-												 * produto ao
-												 * carrinho */
-												int quantidade;
-												printf("\nQuant"
-													"idade:"
-													" ");
-												if (scanf("%d",
-													   &quantidade) ==
-													    1 &&
-												    quantidade >
-													    0)
-												{
-													/* Verifica
-													 * se
-													 * carrinho
-													 * tem
-													 * produtos
-													 * de
-													 * outro
-													 * restaurante
-													 */
-													if (carrinho.num_itens >
-														    0 &&
-													    strcmp(carrinho
-															    .nome_restaurante,
-														    "Domino's Pizza") !=
-														    0)
-													{
-														printf("\n[AVISO] Seu carrinho possui itens de %s.\n",
-															carrinho
-																.nome_restaurante);
-														printf("Deseja limpar o carrinho e adicionar deste restaurante? (s/n): ");
-														char resposta;
-														scanf(" %c",
-														      &resposta);
-														if (resposta !=
-															    's' &&
-														    resposta !=
-															    'S')
-														{
-															printf("\nItem nao adicionado.\n");
-															limparBuffer();
-															enter_ui();
-															continue;
-														}
-														limpar_carrinho(
-															&carrinho);
-													}
-
-													strcpy(carrinho
-															.nome_restaurante,
-														"Domino's Pizza");
-													adicionar_item_carrinho(
-														&carrinho,
-														produtos_dominos
-															[opcao_restaurante -
-															 1]
-																.id,
-														produtos_dominos
-															[opcao_restaurante -
-															 1]
-																.nome,
-														produtos_dominos
-															[opcao_restaurante -
-															 1]
-																.preco,
-														quantidade);
-												}
-												else
-												{
-													printf("\nQuantidade invalida!\n");
-												}
-												limparBuffer();
-												enter_ui();
-											}
-										} while (opcao_restaurante !=
-											  5);
-										break;
-
-									case 4:
-										do
-										{
-											exibir_produtos_restaurante_ui(
-												produtos,
-												num_produtos);
-
-											printf("\n[1] "
-												"Adicionar ao "
-												"Carrinho\n");
-											printf("[2] Adicionar "
-												"aos "
-												"Favoritos\n");
-											printf("[3] Ver "
-												"Carrinho\n\n");
-											printf("[4] "
-												"Voltar\n\n");
-
-											int opcao_rest_din;
-											printf("Entre o "
-												"numero "
-												"desejado: ");
-											if (scanf("%d",
-												   &opcao_rest_din) !=
-											    1)
-											{
-												limparBuffer();
-												opcao_rest_din =
-													4;
-											}
-
-											switch (opcao_rest_din)
-											{
-											case 1:
-												adicionar_ao_carrinho_ui(
-													&carrinho,
-													produtos,
-													num_produtos);
-												break;
-											case 2:
-												adicionar_produto_favorito_ui(
-													&cliente,
-													produtos,
-													num_produtos);
-												break;
-											case 3:
-												do
-												{
-													visualizar_carrinho_ui(
-														&carrinho);
-
-													/* Se
-													 * carrinho
-													 * esta
-													 * vazio,
-													 * sai
-													 * direto
-													 */
-													if (carrinho
-														    .num_itens ==
-													    0)
-													{
-														enter_ui();
-														break;
-													}
-
-													int opcao_carr =
-														menu_carrinho();
-
-													switch (
-														opcao_carr)
-													{
+												switch (opcao_home) {
 													case 1:
-														finalizar_compra_ui(
-															&carrinho,
-															&cliente,
-															pedidos,
-															&num_pedidos,
-															produtos,
-															num_produtos);
+														do {
+															pagina_mcdonalds_ui();
+															opcao_restaurante = menu_mcdonalds();
+
+															if (opcao_restaurante >= 1 && opcao_restaurante <= 4) {
+																/* Adiciona produto ao carrinho */
+																int quantidade;
+																printf("\nQuantidade: ");
+																if (scanf("%d", &quantidade) == 1 && quantidade > 0) {
+																	/* Verifica se carrinho tem produtos de outro restaurante */
+																	if (carrinho.num_itens > 0 && strcmp(carrinho.nome_restaurante, "McDonald's") != 0) {
+																		printf("\n[AVISO] Seu carrinho possui itens de %s.\n", carrinho.nome_restaurante);
+																		printf("Deseja limpar o carrinho e adicionar deste restaurante? (s/n): ");
+																		char resposta;
+																		scanf(" %c", &resposta);
+																		if (resposta != 's' && resposta != 'S') {
+																			printf("\nItem nao adicionado.\n");
+																			limparBuffer();
+																			enter_ui();
+																			continue;
+																		}
+																		limpar_carrinho(&carrinho);
+																	}
+
+																	strcpy(carrinho.nome_restaurante, "McDonald's");
+																	adicionar_item_carrinho(&carrinho, produtos_mcdonalds[opcao_restaurante - 1].id, produtos_mcdonalds[opcao_restaurante - 1].nome, produtos_mcdonalds[opcao_restaurante - 1].preco, quantidade);
+																} else {
+																	printf("\nQuantidade invalida!\n");
+																}
+																limparBuffer();
+																enter_ui();
+															}
+														} while (opcao_restaurante != 5);
 														break;
+
 													case 2:
-														printf("\nDigite o numero do item para remover: ");
-														int item_remover;
-														if (scanf("%d",
-															   &item_remover) ==
-														    1)
-														{
-															remover_item_carrinho(
-																&carrinho,
-																item_remover -
-																	1);
-														}
-														enter_ui();
+														do {
+															pagina_cocobambu_ui();
+															opcao_restaurante = menu_cocobambu();
+
+															if (opcao_restaurante >= 1 && opcao_restaurante <= 4) {
+																/* Adiciona produto ao carrinho */
+																int quantidade;
+																printf("\nQuantidade: ");
+																if (scanf("%d", &quantidade) == 1 && quantidade > 0) {
+																	/* Verifica se carrinho tem produtos de outro restaurante */
+																	if (carrinho.num_itens > 0 && strcmp(carrinho.nome_restaurante, "Coco Bambu") != 0) {
+																		printf("\n[AVISO] Seu carrinho possui itens de %s.\n", carrinho.nome_restaurante);
+																		printf("Deseja limpar o carrinho e adicionar deste restaurante? (s/n): ");
+																		char resposta;
+																		scanf(" %c", &resposta);
+																		if (resposta != 's' && resposta != 'S') {
+																			printf("\nItem nao adicionado.\n");
+																			limparBuffer();
+																			enter_ui();
+																			continue;
+																		}
+																		limpar_carrinho(&carrinho);
+																	}
+
+																	strcpy(carrinho.nome_restaurante, "Coco Bambu");
+																	adicionar_item_carrinho(&carrinho, produtos_cocobambu[opcao_restaurante - 1].id, produtos_cocobambu[opcao_restaurante - 1].nome, produtos_cocobambu[opcao_restaurante - 1].preco, quantidade);
+																} else {
+																	printf("\nQuantidade invalida!\n");
+																}
+																limparBuffer();
+																enter_ui();
+															}
+														} while (opcao_restaurante != 5);
 														break;
+
 													case 3:
-														limpar_carrinho(
-															&carrinho);
-														printf("\n✓ Carrinho limpo!\n");
-														enter_ui();
+														do {
+															pagina_dominos_ui();
+															opcao_restaurante = menu_dominos();
+
+															if (opcao_restaurante >= 1 && opcao_restaurante <= 4) {
+																/* Adiciona produto ao carrinho */
+																int quantidade;
+																printf("\nQuantidade: ");
+																if (scanf("%d", &quantidade) == 1 && quantidade > 0) {
+																	/* Verifica se carrinho tem produtos de outro restaurante */
+																	if (carrinho.num_itens > 0 && strcmp(carrinho.nome_restaurante, "Domino's Pizza") != 0) {
+																		printf("\n[AVISO] Seu carrinho possui itens de %s.\n", carrinho.nome_restaurante);
+																		printf("Deseja limpar o carrinho e adicionar deste restaurante? (s/n): ");
+																		char resposta;
+																		scanf(" %c", &resposta);
+																		if (resposta != 's' && resposta != 'S') {
+																			printf("\nItem nao adicionado.\n");
+																			limparBuffer();
+																			enter_ui();
+																			continue;
+																		}
+																		limpar_carrinho(&carrinho);
+																	}
+
+																	strcpy(carrinho.nome_restaurante, "Domino's Pizza");
+																	adicionar_item_carrinho(&carrinho, produtos_dominos[opcao_restaurante - 1].id, produtos_dominos[opcao_restaurante - 1].nome, produtos_dominos[opcao_restaurante - 1].preco, quantidade);
+																} else {
+																	printf("\nQuantidade invalida!\n");
+																}
+																limparBuffer();
+																enter_ui();
+															}
+														} while (opcao_restaurante != 5);
 														break;
+
 													case 4:
+														do {
+															exibir_produtos_restaurante_ui(produtos, num_produtos);
+
+															printf("\n[1] Adicionar ao Carrinho\n");
+															printf("[2] Adicionar aos Favoritos\n");
+															printf("[3] Ver Carrinho\n\n");
+															printf("[4] Voltar\n\n");
+
+															int opcao_rest_din;
+															printf("Entre o numero desejado: ");
+															if (scanf("%d", &opcao_rest_din) != 1) {
+																limparBuffer();
+																opcao_rest_din = 4;
+															}
+
+															switch (opcao_rest_din) {
+																case 1:
+																	adicionar_ao_carrinho_ui(&carrinho, produtos, num_produtos);
+																	break;
+
+																case 2:
+																	adicionar_produto_favorito_ui(&cliente, produtos, num_produtos);
+																	break;
+
+																case 3:
+																	do {
+																		visualizar_carrinho_ui(&carrinho);
+
+																		/* Se carrinho esta vazio, sai  direto */
+																		if (carrinho.num_itens == 0) {
+																			enter_ui();
+																			break;
+																		}
+
+																		int opcao_carr = menu_carrinho();
+
+																		switch (opcao_carr) {
+																			case 1:
+																				finalizar_compra_ui(&carrinho, &cliente, pedidos, &num_pedidos, produtos, num_produtos);
+																				break;
+
+																			case 2:
+																				printf("\nDigite o numero do item para remover: ");
+																				int item_remover;
+																				if (scanf("%d", &item_remover) == 1) {
+																					remover_item_carrinho(&carrinho, item_remover - 1);
+																				}
+																				enter_ui();
+																				break;
+
+																			case 3:
+																				limpar_carrinho(&carrinho);
+																				printf("\n? Carrinho limpo!\n");
+																				enter_ui();
+																				break;
+
+																			case 4:
+
+																				break;
+																		}
+
+																		if (opcao_carr == 4 || carrinho.num_itens == 0)
+																			break;
+
+																	} while (1);
+																	break;
+
+																case 4:
+																	opcao_rest_din = 5;
+																	break;
+															}
+
+															if (opcao_rest_din == 5)
+																break;
+
+														} while (1);
+														break;
+
+													case 5:
+														/* Ver Carrinho e Finalizar Compra */
+														do {
+															visualizar_carrinho_ui(&carrinho);
+
+															/* Se carrinho esta vazio, sai direto */
+															if (carrinho.num_itens == 0) {
+																enter_ui();
+																break;
+															}
+
+															int opcao_carr = menu_carrinho();
+
+															switch (opcao_carr) {
+																case 1:
+																	finalizar_compra_ui(&carrinho, &cliente, pedidos, &num_pedidos, produtos, num_produtos);
+																	break;
+
+																case 2:
+																	printf("\nDigite o numero do item para remover: ");
+																	int item_remover;
+																	if (scanf("%d", &item_remover) == 1) {
+																		remover_item_carrinho(&carrinho, item_remover - 1);
+																	}
+																	enter_ui();
+																	break;
+
+																case 3:
+																	limpar_carrinho(&carrinho);
+																	printf("\n? Carrinho limpo!\n");
+																	enter_ui();
+																	break;
+
+																case 4:
+
+																	break;
+															}
+
+															if (opcao_carr == 4 || carrinho.num_itens == 0)
+																break;
+
+														} while (1);
+														break;
+
+													case 6:
+
+														break;
+												}
+											} while (opcao_home != 6);
+											break;
+
+										case 2:
+											pedidos_cliente_ui(pedidos, num_pedidos, &cliente);
+											enter_ui();
+											break;
+
+										case 3: {
+											int opcao_perfil = 0;
+											do {
+												perfil_cliente_ui(&cliente);
+
+												opcao_perfil = 0;
+												opcao_perfil = menu_perfil_cliente();
+
+												switch (opcao_perfil) {
+													case 1: {
+														int opcao_editar = 0;
+														do {
+															editar_perfil_cliente_ui(&cliente);
+
+															opcao_editar = 0;
+															opcao_editar = menu_editar_perfil_cliente();
+
+															switch (opcao_editar) {
+																case 1: {
+																	int i = 0, ultimo_espaco = 0;
+																	printf("Insira o novo nome: ");
+																	scanf(" %[^\n]s", cliente.nome);
+																	cliente.nome[0] = toupper(cliente.nome[0]);
+
+																	for (i = 0; i < (int)strlen(cliente.nome); i++) {
+																		if (cliente.nome[i] == ' ') {
+																			ultimo_espaco = i + 1;
+																		}
+																	}
+
+																	if (ultimo_espaco > 0) {
+																		cliente.nome[ultimo_espaco] = toupper(cliente.nome[ultimo_espaco]);
+																	}
+
+																	printf("O nome foi alterado com sucesso!\n Novo nome: %s\n", cliente.nome);
+																	enter_ui();
+																} break;
+
+																case 2:
+																	printf("Insira o novo email: ");
+																	scanf(" %s", cliente.email);
+
+																	printf("O email foi alterado com sucesso!\n Novo email: %s\n", cliente.email);
+																	enter_ui();
+																	break;
+
+																case 3:
+																	printf("Insira o novo endereco: ");
+																	scanf(" %19[^\n]", cliente.end.endereco);
+
+																	printf("Insira o novo logradouro: ");
+																	scanf(" %9[^\n]", cliente.end.logradouro);
+
+																	printf("Insira o novo CEP: ");
+																	scanf(" %10s", cliente.end.cep);
+
+																	printf("Insira o novo numero: ");
+																	if (scanf(" %d", &cliente.end.numero) != 1) {
+																		limparBuffer();
+																		cliente.end.numero = 0;
+																	}
+
+																	printf("O endereco foi alterado com sucesso!\n Novo endereco: %s, %s, %d, CEP: %s\n", cliente.end.endereco, cliente.end.logradouro, cliente.end.numero, cliente.end.cep);
+																	enter_ui();
+																	break;
+
+																case 4:
+
+																	break;
+
+																default:
+																	opcao_invalida_ui();
+															}
+														} while (opcao_editar != 4);
 														break;
 													}
 
-													if (opcao_carr ==
-														    4 ||
-													    carrinho.num_itens ==
-														    0)
+													case 2:
+														alterar_senha_cliente_ui(&cliente);
+														alterar_senha(&cliente);
+
+														le_valida_verificacao(&cliente);
+
+														alterar_senha_cliente_ui(&cliente);
+														printf("Senha alterada com sucesso!\n");
+														enter_ui();
 														break;
 
-												} while (1);
-												break;
-											case 4:
-												opcao_rest_din =
-													5;
-												break;
-											}
+													case 3: {
+														int opcao_fav = 0;
+														do {
+															clearScreen();
+															printf("+-----------------------------------------------------------------------+\n");
+															printf("|                         FAVORITOS                                     |\n");
+															printf("+-----------------------------------------------------------------------+\n\n");
+															printf("[1] >> Ver Restaurantes Favoritos\n");
+															printf("[2] >> Ver Produtos Favoritos\n");
+															printf("[3] >> Adicionar Restaurante Favorito\n");
+															printf("[4] >> Adicionar Produto Favorito\n\n");
+															printf("[5] >> Voltar\n\n");
 
-											if (opcao_rest_din ==
-											    5)
-												break;
+															printf("Escolha: ");
+															if (scanf("%d", &opcao_fav) == 1) {
+																switch (opcao_fav) {
+																	case 1:
+																		listar_favoritos_ui(&cliente, produtos);
+																		break;
 
-										} while (1);
-										break;
+																	case 2:
+																		listar_produtos_favoritos_ui(&cliente, produtos, num_produtos);
+																		break;
 
-									case 5:
-										/* Ver Carrinho e Finalizar
-										 * Compra */
-										do
-										{
-											visualizar_carrinho_ui(
-												&carrinho);
+																	case 3:
+																		adicionar_favorito_ui(&cliente, produtos);
+																		break;
 
-											/* Se carrinho esta
-											 * vazio, sai direto */
-											if (carrinho
-												    .num_itens ==
-											    0)
-											{
-												enter_ui();
-												break;
-											}
+																	case 4:
+																		adicionar_produto_favorito_ui(&cliente, produtos, num_produtos);
+																		break;
 
-											int opcao_carr =
-												menu_carrinho();
+																	case 5:
 
-											switch (opcao_carr)
-											{
-											case 1:
-												finalizar_compra_ui(
-													&carrinho,
-													&cliente,
-													pedidos,
-													&num_pedidos,
-													produtos,
-													num_produtos);
-												break;
-											case 2:
-												printf("\nDigit"
-													"e o "
-													"numero "
-													"do "
-													"item "
-													"para "
-													"remover"
-													": ");
-												int item_remover;
-												if (scanf("%d",
-													   &item_remover) ==
-												    1)
-												{
-													remover_item_carrinho(
-														&carrinho,
-														item_remover -
-															1);
+																		break;
+
+																	default:
+																		printf("\nOpcao invalida!\n");
+																		enter_ui();
+																}
+															} else {
+																limparBuffer();
+																opcao_fav = 0;
+															}
+														} while (opcao_fav != 5);
+													} break;
+
+													case 4:
+														excluir_conta_cliente_ui();
+														if (excluir_conta(&cliente) == 1) {
+															opcao_perfil = 5;
+															tipo = 4;	   // Sair do menu cliente tambem
+															tipo_menu = 4; // Sair do menu tipo usuario
+														}
+														enter_ui();
+														break;
+
+													case 5:
+
+														break;
+
+													default:
+														opcao_invalida_ui();
 												}
-												enter_ui();
-												break;
-											case 3:
-												limpar_carrinho(
-													&carrinho);
-												printf("\n✓ "
-													"Carrinh"
-													"o "
-													"limpo!"
-													"\n");
-												enter_ui();
-												break;
-											case 4:
-												break;
-											}
+											} while (opcao_perfil != 5);
+										} break;
 
-											if (opcao_carr == 4 ||
-											    carrinho.num_itens ==
-												    0)
-												break;
+										case 4:
 
-										} while (1);
-										break;
-
-									case 6:
-
-										break;
+											break;
 									}
-								} while (opcao_home != 6);
+								} while (tipo != 4);
 								break;
 
 							case 2:
-								pedidos_cliente_ui(pedidos, num_pedidos,
-										     &cliente);
-								enter_ui();
+								modo_entregador_ui(&cliente);
+								printf("Funcionalidade em desenvolvimento...\n");
+								tipo = enter_ui();
 								break;
 
 							case 3:
-							{
-								int opcao_perfil = 0;
-								do
-								{
-									perfil_cliente_ui(&cliente);
+								if (cliente.rest.cadastrado == 0) {
+									cadastro_restaurante(&cliente);
+								}
 
-									opcao_perfil = 0;
-									opcao_perfil = menu_perfil_cliente();
+								modo_restaurante_ui(&cliente);
 
-									switch (opcao_perfil)
-									{
-									case 1:
-									{
-										int opcao_editar = 0;
-										do
-										{
-											editar_perfil_cliente_ui(
-												&cliente);
+								do {
+									clearScreen();
+									modo_restaurante_ui(&cliente);
 
-											opcao_editar = 0;
-											opcao_editar =
-												menu_editar_perfil_cliente();
+									tipo = 0;
+									tipo = menu_restaurante();
 
-											switch (opcao_editar)
-											{
-											case 1:
-											{
-												int i = 0,
-												    ultimo_espaco =
-													    0;
-												printf("Insira "
-													"o novo "
-													"nome:"
-													" ");
-												scanf(" %[^\n]"
-												      "s",
-												      cliente.nome);
-												cliente.nome
-													[0] = toupper(
-													cliente.nome
-														[0]);
+									switch (tipo) {
+										case 1:
+											restaurante_dashboard_ui(&cliente);
+											enter_ui();
+											break;
 
-												for (i = 0;
-												     i <
-												     (int) strlen(
-													     cliente.nome);
-												     i++)
-												{
-													if (cliente.nome
-														    [i] ==
-													    ' ')
-													{
-														ultimo_espaco =
-															i +
-															1;
-													}
-												}
-
-												if (ultimo_espaco >
-												    0)
-												{
-													cliente.nome
-														[ultimo_espaco] = toupper(
-														cliente.nome
-															[ultimo_espaco]);
-												}
-
-												printf("O nome "
-													"foi "
-													"alterad"
-													"o com "
-													"sucesso"
-													"!\n "
-													"Novo "
-													"nome: "
-													"%s\n",
-													cliente.nome);
+										case 2:
+											restaurante_pedidos_ui(pedidos, num_pedidos, &cliente);
+											if (num_pedidos > 0) {
+												gerenciar_status_pedido(pedidos, num_pedidos);
+											} else {
 												enter_ui();
 											}
 											break;
 
-											case 2:
-												printf("Insira "
-													"o novo "
-													"email:"
-													" ");
-												scanf(" %s",
-												      cliente.email);
-
-												printf("O "
-													"email "
-													"foi "
-													"alterad"
-													"o com "
-													"sucesso"
-													"!\n "
-													"Novo "
-													"email: "
-													"%s\n",
-													cliente.email);
-												enter_ui();
-												break;
-
-											case 3:
-												printf("Insira "
-													"o novo "
-													"enderec"
-													"o: ");
-												scanf(" %19[^"
-												      "\n]",
-												      cliente.end
-													      .endereco);
-
-												printf("Insira "
-													"o novo "
-													"logrado"
-													"uro: ");
-												scanf(" %9[^"
-												      "\n]",
-												      cliente.end
-													      .logradouro);
-
-												printf("Insira "
-													"o novo "
-													"CEP: ");
-												scanf(" %10s",
-												      cliente.end
-													      .cep);
-
-												printf("Insira "
-													"o novo "
-													"numero:"
-													" ");
-												if (scanf(" %d",
-													   &cliente.end
-														    .numero) !=
-												    1)
-												{
-													limparBuffer();
-													cliente.end
-														.numero =
-														0;
-												}
-
-												printf("O "
-													"enderec"
-													"o foi "
-													"alterad"
-													"o com "
-													"sucesso"
-													"!\n "
-													"Novo "
-													"enderec"
-													"o: %s, "
-													"%s, "
-													"%d, "
-													"CEP: "
-													"%s\n",
-													cliente.end
-														.endereco,
-													cliente.end
-														.logradouro,
-													cliente.end
-														.numero,
-													cliente.end
-														.cep);
-												enter_ui();
-												break;
-
-											case 4:
-
-												break;
-
-											default:
-												opcao_invalida_ui();
-											}
-										} while (opcao_editar != 4);
-										break;
-									}
-
-									case 2:
-										alterar_senha_cliente_ui(
-											&cliente);
-										alterar_senha(&cliente);
-
-										le_valida_verificacao(
-											&cliente);
-
-										alterar_senha_cliente_ui(
-											&cliente);
-										printf("Senha alterada com "
-											"sucesso!\n");
-										enter_ui();
-										break;
-
-									case 3:
-									{
-										int opcao_fav = 0;
-										do
-										{
-											clearScreen();
-											printf("+-------------"
-												"--------------"
-												"--------------"
-												"--------------"
-												"--------------"
-												"--+\n");
-											printf("|             "
-												"            "
-												"FAVORITOS     "
-												"              "
-												"              "
-												"    |\n");
-											printf("+-------------"
-												"--------------"
-												"--------------"
-												"--------------"
-												"--------------"
-												"--+\n\n");
-											printf("[1] >> Ver "
-												"Restaurantes "
-												"Favoritos\n");
-											printf("[2] >> Ver "
-												"Produtos "
-												"Favoritos\n");
-											printf("[3] >> "
-												"Adicionar "
-												"Restaurante "
-												"Favorito\n");
-											printf("[4] >> "
-												"Adicionar "
-												"Produto "
-												"Favorito\n\n");
-											printf("[5] >> "
-												"Voltar\n\n");
-
-											printf("Escolha: ");
-											if (scanf("%d",
-												   &opcao_fav) ==
-											    1)
-											{
-												switch (
-													opcao_fav)
-												{
-												case 1:
-													listar_favoritos_ui(
-														&cliente,
-														produtos);
-													break;
-												case 2:
-													listar_produtos_favoritos_ui(
-														&cliente,
-														produtos,
-														num_produtos);
-													break;
-												case 3:
-													adicionar_favorito_ui(
-														&cliente,
-														produtos);
-													break;
-												case 4:
-													adicionar_produto_favorito_ui(
-														&cliente,
-														produtos,
-														num_produtos);
-													break;
-												case 5:
-													break;
-												default:
-													printf("\nOpcao invalida!\n");
-													enter_ui();
-												}
-											}
-											else
-											{
-												limparBuffer();
-												opcao_fav = 0;
-											}
-										} while (opcao_fav != 5);
-									}
-									break;
-
-									case 4:
-										excluir_conta_cliente_ui();
-										if (excluir_conta(&cliente) ==
-										    1)
-										{
-											opcao_perfil = 5;
-											tipo = 4; // Sair do
-												   // menu
-												   // cliente
-												   // tambem
-											tipo_menu =
-												4; // Sair do
-												   // menu tipo
-												   // usuario
-										}
-										enter_ui();
-										break;
-
-									case 5:
-
-										break;
-
-									default:
-										opcao_invalida_ui();
-									}
-								} while (opcao_perfil != 5);
-							}
-							break;
-
-							case 4:
-
-								break;
-							}
-						} while (tipo != 4);
-						break;
-
-					case 2:
-						modo_entregador_ui(&cliente);
-						printf("Funcionalidade em desenvolvimento...\n");
-						tipo = enter_ui();
-						break;
-
-					case 3:
-						if (cliente.rest.cadastrado == 0)
-						{
-							cadastro_restaurante(&cliente);
-						}
-
-						modo_restaurante_ui(&cliente);
-
-						do
-						{
-							clearScreen();
-							modo_restaurante_ui(&cliente);
-
-							tipo = 0;
-							tipo = menu_restaurante();
-
-							switch (tipo)
-							{
-							case 1:
-								restaurante_dashboard_ui(&cliente);
-								enter_ui();
-								break;
-
-							case 2:
-								restaurante_pedidos_ui(pedidos, num_pedidos,
-											  &cliente);
-								if (num_pedidos > 0)
-								{
-									gerenciar_status_pedido(pedidos,
-												   num_pedidos);
-								}
-								else
-								{
-									enter_ui();
-								}
-								break;
-
-							case 3:
-								restaurante_perfil_ui(&cliente);
-								enter_ui();
-								break;
-
-							case 4:
-								do
-								{
-									restaurante_configuracoes_ui();
-
-									tipo = 0;
-									tipo = menu_configuracoes_restaurante(
-										&cliente);
-
-									switch (tipo)
-									{
-									case 1:
-										dados_restaurante_ui();
-										dados_gerais_restaurante_ui(
-											&cliente);
-										break;
-
-									case 2:
-										status_restaurante_ui(
-											&cliente);
-
-										char resposta;
-										int continuar = 1;
-
-										while (continuar)
-										{
-											if (cliente.rest
-												    .status ==
-											    'a')
-											{
-												printf("O "
-													"restaur"
-													"ante "
-													"esta "
-													"ABERTO."
-													"\n");
-												printf("Deseja "
-													"fechar "
-													"o "
-													"restaur"
-													"ante? "
-													"(s/"
-													"n): ");
-											}
-											else
-											{
-												printf("O "
-													"restaur"
-													"ante "
-													"esta "
-													"FECHADO"
-													".\n");
-												printf("Deseja "
-													"abrir "
-													"o "
-													"restaur"
-													"ante? "
-													"(s/"
-													"n): ");
-											}
-
-											limparBuffer();
-											scanf(" %c",
-											      &resposta);
-
-											if (resposta == 's' ||
-											    resposta == 'S')
-											{
-												// ** Operacao
-												// ternaria para
-												// alternar o
-												// status -
-												// (condicao) ?
-												// valor_se_verdadeiro
-												// :
-												// valor_se_falso
-												// **
-												cliente.rest
-													.status =
-													(cliente.rest
-														 .status ==
-													 'a')
-														? 'f'
-														: 'a';
-
-												clearScreen();
-												status_restaurante_ui(
-													&cliente);
-
-												if (cliente.rest
-													    .status ==
-												    'a')
-												{
-													printf("Restaurante aberto com sucesso!\n");
-												}
-												else
-												{
-													printf("Restaurante fechado com sucesso!\n");
-												}
-											}
-											else if (resposta ==
-													  'n' ||
-												  resposta ==
-													  'N')
-											{
-												continuar = 0;
-											}
-											else
-											{
-												printf("\nOpcao"
-													" invali"
-													"da! "
-													"Digite "
-													"'s' ou "
-													"'n'."
-													"\n\n");
-											}
-										}
-
-										tipo = enter_ui();
-										break;
-
-									case 3:
-										horario_funcionamento_ui(
-											&cliente);
-
-										tipo = 0;
-										printf("\n+------------------"
-											"---------------------"
-											"---------+\n");
-										printf("| EDITAR HORARIOS    "
-											"                     "
-											"       |\n");
-										printf("+--------------------"
-											"---------------------"
-											"-------+\n");
-										printf("| [1] Segunda-feira  "
-											"                     "
-											"       |\n");
-										printf("| [2] Terca-feira    "
-											"                     "
-											"       |\n");
-										printf("| [3] Quarta-feira   "
-											"                     "
-											"       |\n");
-										printf("| [4] Quinta-feira   "
-											"                     "
-											"       |\n");
-										printf("| [5] Sexta-feira    "
-											"                     "
-											"       |\n");
-										printf("| [6] Sabado         "
-											"                     "
-											"       |\n");
-										printf("| [7] Domingo        "
-											"                     "
-											"       |\n");
-										printf("| [8] Editar todos "
-											"os dias              "
-											"         |\n");
-										printf("| [9] Voltar         "
-											"                     "
-											"       |\n");
-										printf("+--------------------"
-											"---------------------"
-											"-------+\n");
-										printf("Escolha uma opcao: ");
-										scanf("%d", &tipo);
-										limparBuffer();
-
-										if (tipo >= 1 && tipo <= 7)
-										{
-											const char *dias[7] = {
-												"Segunda-feira",
-												"Terca-feira",
-												"Quarta-feira",
-												"Quinta-feira",
-												"Sexta-feira",
-												"Sabado",
-												"Domingo"};
-											int dia = tipo - 1;
-
-											printf("\n+-----------"
-												"--------------"
-												"--------------"
-												"---------+\n");
-											printf("| EDITAR "
-												"HORARIO - "
-												"%s%-*s|\n",
-												dias[dia],
-												(int) (32 -
-													strlen(dias[dia])),
-												"");
-											printf("+-------------"
-												"--------------"
-												"--------------"
-												"-------+\n");
-											printf("Horario "
-												"atual: %s - "
-												"%s\n",
-												cliente.rest
-													.horarios
-														[dia]
-													.abertura,
-												cliente.rest
-													.horarios
-														[dia]
-													.fechamento);
-
-											printf("\nInsira o "
-												"novo horario "
-												"de abertura "
-												"(HH:MM): ");
-											scanf(" %5s",
-											      cliente.rest
-												      .horarios
-													      [dia]
-												      .abertura);
-
-											printf("Insira o novo "
-												"horario de "
-												"fechamento "
-												"(HH:MM): ");
-											scanf(" %5s",
-											      cliente.rest
-												      .horarios
-													      [dia]
-												      .fechamento);
-
-											printf("\nHorario de "
-												"%s atualizado "
-												"com "
-												"sucesso!\n",
-												dias[dia]);
-											printf("Novo horario: "
-												"%s - %s\n",
-												cliente.rest
-													.horarios
-														[dia]
-													.abertura,
-												cliente.rest
-													.horarios
-														[dia]
-													.fechamento);
+										case 3:
+											restaurante_perfil_ui(&cliente);
 											enter_ui();
-										}
-										else if (tipo == 8)
-										{
-											printf("\n+-----------"
-												"--------------"
-												"--------------"
-												"---------+\n");
-											printf("| EDITAR "
-												"TODOS OS "
-												"HORARIOS      "
-												"              "
-												"   |\n");
-											printf("+-------------"
-												"--------------"
-												"--------------"
-												"-------+\n");
+											break;
 
-											printf("Insira o "
-												"horario de "
-												"abertura "
-												"(HH:MM): ");
-											char abertura[6],
-												fechamento[6];
-											scanf(" %5s",
-											      abertura);
+										case 4:
+											do {
+												restaurante_configuracoes_ui();
 
-											printf("Insira o "
-												"horario de "
-												"fechamento "
-												"(HH:MM): ");
-											scanf(" %5s",
-											      fechamento);
+												tipo = 0;
+												tipo = menu_configuracoes_restaurante(&cliente);
 
-											int d = 0;
-											for (d = 0; d < 7; d++)
-											{
-												strcpy(cliente.rest
-														.horarios
-															[d]
-														.abertura,
-													abertura);
-												strcpy(cliente.rest
-														.horarios
-															[d]
-														.fechamento,
-													fechamento);
-											}
+												switch (tipo) {
+													case 1:
+														dados_restaurante_ui();
+														dados_gerais_restaurante_ui(&cliente);
+														break;
 
-											printf("\nTodos os "
-												"horarios "
-												"foram "
-												"atualizados "
-												"com "
-												"sucesso!\n");
-											printf("Novo horario: "
-												"%s - %s\n",
-												abertura,
-												fechamento);
-											enter_ui();
-										}
-										break;
+													case 2:
+														status_restaurante_ui(&cliente);
 
-									case 4:
-										menu_gerenciar_produtos_ui(
-											produtos,
-											&num_produtos);
-										break;
+														char resposta;
+														int continuar = 1;
 
-									case 5:
-										break;
-									default:
-										opcao_invalida_ui();
+														while (continuar) {
+															if (cliente.rest.status == 'a') {
+																printf("O restaurante esta ABERTO.\n");
+																printf("Deseja fechar o restaurante? (s/n): ");
+															} else {
+																printf("O restaurante esta FECHADO.\n");
+																printf("Deseja abrir o restaurante? (s/n): ");
+															}
+
+															limparBuffer();
+															scanf(" %c", &resposta);
+
+															if (resposta == 's' || resposta == 'S') {
+																// ** Operacao ternaria para alternar o status - (condicao) ? valor_se_verdadeiro : valor_se_falso **
+																cliente.rest.status = (cliente.rest.status == 'a') ? 'f' : 'a';
+
+																clearScreen();
+																status_restaurante_ui(&cliente);
+
+																if (cliente.rest.status == 'a') {
+																	printf("Restaurante aberto com sucesso!\n");
+																} else {
+																	printf("Restaurante fechado com sucesso!\n");
+																}
+															} else if (resposta == 'n' || resposta == 'N') {
+																continuar = 0;
+															} else {
+																printf("\nOpcao invalida! Digite 's' ou 'n'.\n\n");
+															}
+														}
+
+														tipo = enter_ui();
+														break;
+
+													case 3:
+														horario_funcionamento_ui(&cliente);
+
+														tipo = 0;
+														printf("\n+------------------------------------------------+\n");
+														printf("| EDITAR HORARIOS                                |\n");
+														printf("+------------------------------------------------+\n");
+														printf("| [1] Segunda-feira                              |\n");
+														printf("| [2] Terca-feira                                |\n");
+														printf("| [3] Quarta-feira                               |\n");
+														printf("| [4] Quinta-feira                               |\n");
+														printf("| [5] Sexta-feira                                |\n");
+														printf("| [6] Sabado                                     |\n");
+														printf("| [7] Domingo                                    |\n");
+														printf("| [8] Editar todos os dias                       |\n");
+														printf("| [9] Voltar                                     |\n");
+														printf("+------------------------------------------------+\n");
+														printf("Escolha uma opcao: ");
+														scanf("%d", &tipo);
+														limparBuffer();
+
+														if (tipo >= 1 && tipo <= 7) {
+															const char *dias[7] = {"Segunda-feira", "Terca-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sabado", "Domingo"};
+															int dia = tipo - 1;
+
+															printf("\n+------------------------------------------------+\n");
+															printf("| EDITAR HORARIO - %s%-*s|\n", dias[dia], (int)(32 - strlen(dias[dia])), "");
+															printf("+------------------------------------------------+\n");
+															printf("Horario atual: %s - %s\n", cliente.rest.horarios[dia].abertura, cliente.rest.horarios[dia].fechamento);
+
+															printf("\nInsira o novo horario de abertura (HH:MM): ");
+															scanf(" %5s", cliente.rest.horarios[dia].abertura);
+
+															printf("Insira o novo horario de fechamento (HH:MM): ");
+															scanf(" %5s", cliente.rest.horarios[dia].fechamento);
+
+															printf("\nHorario de %s atualizado com sucesso!\n", dias[dia]);
+															printf("Novo horario: %s - %s\n", cliente.rest.horarios[dia].abertura, cliente.rest.horarios[dia].fechamento);
+															enter_ui();
+														} else if (tipo == 8) {
+															printf("\n+------------------------------------------------+\n");
+															printf("| EDITAR TODOS OS HORARIOS                       |\n");
+															printf("+------------------------------------------------+\n");
+
+															printf("Insira o horario de abertura (HH:MM): ");
+															char abertura[6], fechamento[6];
+															scanf(" %5s", abertura);
+
+															printf("Insira o horario de fechamento (HH:MM): ");
+															scanf(" %5s", fechamento);
+
+															int d = 0;
+															for (d = 0; d < 7; d++) {
+																strcpy(cliente.rest.horarios[d].abertura, abertura);
+																strcpy(cliente.rest.horarios[d].fechamento, fechamento);
+															}
+
+															printf("\nTodos os horarios foram atualizados com sucesso!\n");
+															printf("Novo horario: %s - %s\n", abertura, fechamento);
+															enter_ui();
+														}
+														break;
+
+													case 4:
+														menu_gerenciar_produtos_ui(produtos, &num_produtos);
+														break;
+
+													case 5:
+
+														break;
+
+													default:
+														opcao_invalida_ui();
+												}
+											} while (tipo != 5);
+											tipo = 0; // Reseta tipo para nao sair do menu principal
+											break;
+
+										case 5:
+
+											break;
+
+										default:
+											opcao_invalida_ui();
 									}
 								} while (tipo != 5);
-								tipo = 0; // Reseta tipo para nao sair do
-									   // menu principal
 								break;
 
-							case 5:
+							case 4:
 
 								break;
+						}
+					} while (tipo_menu != 4);
+				}
+				break;
 
-							default:
-								opcao_invalida_ui();
-							}
-						} while (tipo != 5);
-						break;
+			case 3:
+				clearScreen();
+				printf("Programa Finalizado\n");
+				break;
 
-					case 4:
-
-						break;
-					}
-				} while (tipo_menu != 4);
-			}
-			break;
-
-		case 3:
-			clearScreen();
-			printf("Programa Finalizado\n");
-			break;
-
-		default:
-			opcao_invalida_ui();
+			default:
+				opcao_invalida_ui();
 		}
 	} while (opcao != 3);
+
 	return 0;
 }
 
 // Funcao do menu inicial
-int menu(int opcao)
-{
+int menu(int opcao) {
 	int cont = 0;
 
 	printf("[1] >> Cadastrar\n");
 	printf("[2] >> Logar\n");
 	printf("[3] >> Sair\n\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
+
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &opcao) != 1)
-		{
+		if (scanf("%d", &opcao) != 1) {
 			limparBuffer();
 			opcao = 0;
 		}
@@ -1538,8 +900,7 @@ int menu(int opcao)
 }
 
 // Funcao do menu do tipo de usuario
-int menu_tipo()
-{
+int menu_tipo() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1550,15 +911,13 @@ int menu_tipo()
 	printf("[3] >> Restaurante\n\n");
 	printf("[4] >> Voltar\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
+
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1569,8 +928,7 @@ int menu_tipo()
 }
 
 // Funcao do menu do cliente
-int menu_cliente()
-{
+int menu_cliente() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1579,16 +937,13 @@ int menu_cliente()
 	printf("[3] >> Perfil\n\n");
 	printf("[4] >> Voltar\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1600,8 +955,7 @@ int menu_cliente()
 }
 
 // Funcao do menu do restaurante
-int menu_restaurante()
-{
+int menu_restaurante() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1611,16 +965,13 @@ int menu_restaurante()
 	printf("[4] >> Configuracoes\n\n");
 	printf("[5] >> Voltar\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1631,8 +982,7 @@ int menu_restaurante()
 	return tipo;
 }
 
-int menu_editar_horario_restaurante()
-{
+int menu_editar_horario_restaurante() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1641,16 +991,13 @@ int menu_editar_horario_restaurante()
 
 	printf("[3] >> Voltar\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1661,8 +1008,7 @@ int menu_editar_horario_restaurante()
 	return tipo;
 }
 
-int menu_perfil_cliente()
-{
+int menu_perfil_cliente() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1672,16 +1018,13 @@ int menu_perfil_cliente()
 	printf("[4] >> Excluir Conta\n\n");
 	printf("[5] >> Voltar\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1692,8 +1035,7 @@ int menu_perfil_cliente()
 	return tipo;
 }
 
-int menu_home()
-{
+int menu_home() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1721,16 +1063,13 @@ int menu_home()
 
 	printf("[6] >> Voltar\n\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1741,8 +1080,7 @@ int menu_home()
 	return tipo;
 }
 
-int menu_editar_perfil_cliente()
-{
+int menu_editar_perfil_cliente() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1751,16 +1089,13 @@ int menu_editar_perfil_cliente()
 	printf("[3] >> Alterar Endereco\n\n");
 	printf("[4] >> Voltar\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1771,8 +1106,7 @@ int menu_editar_perfil_cliente()
 	return tipo;
 }
 
-int menu_mcdonalds()
-{
+int menu_mcdonalds() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1809,16 +1143,13 @@ int menu_mcdonalds()
 
 	printf("   [5] >> Voltar\n\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1829,8 +1160,7 @@ int menu_mcdonalds()
 	return tipo;
 }
 
-int menu_cocobambu()
-{
+int menu_cocobambu() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1867,16 +1197,13 @@ int menu_cocobambu()
 
 	printf("   [5] >> Voltar\n\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1887,8 +1214,7 @@ int menu_cocobambu()
 	return tipo;
 }
 
-int menu_dominos()
-{
+int menu_dominos() {
 	int cont = 0;
 	int tipo = 0;
 
@@ -1925,16 +1251,13 @@ int menu_dominos()
 
 	printf("   [5] >> Voltar\n\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1946,9 +1269,8 @@ int menu_dominos()
 }
 
 // Funcao do Menu configuracoes do restaurante
-int menu_configuracoes_restaurante(struct Cliente *cliente)
-{
-	(void) cliente; // Parametro nao utilizado no momento
+int menu_configuracoes_restaurante(struct Cliente *cliente) {
+	(void)cliente; // Parametro nao utilizado no momento
 	int cont = 0;
 	int tipo = 0;
 
@@ -1959,16 +1281,13 @@ int menu_configuracoes_restaurante(struct Cliente *cliente)
 
 	printf("[5] >> Voltar\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &tipo) != 1)
-		{
+		if (scanf("%d", &tipo) != 1) {
 			limparBuffer();
 			tipo = 0;
 		}
@@ -1980,8 +1299,7 @@ int menu_configuracoes_restaurante(struct Cliente *cliente)
 }
 
 // Funcao de cadastro do restaurante
-int cadastro_restaurante(struct Cliente *cliente)
-{
+int cadastro_restaurante(struct Cliente *cliente) {
 	char nome[50];
 	char tipo[30];
 	char telefone[20];
@@ -2009,17 +1327,14 @@ int cadastro_restaurante(struct Cliente *cliente)
 	printf("Digite o endereco do restaurante: ");
 	scanf(" %19[^\n]", cliente->rest.end.endereco);
 
-	for (i = 0; i < (int) strlen(cliente->rest.end.endereco); i++)
-	{
-		if (cliente->rest.end.endereco[i] == ' ' && cont == 0)
-		{
+	for (i = 0; i < (int)strlen(cliente->rest.end.endereco); i++) {
+		if (cliente->rest.end.endereco[i] == ' ' && cont == 0) {
 			primeiro_espaco = i;
 			cont++;
 		}
 	}
 
-	for (i = 0; i < primeiro_espaco; i++)
-	{
+	for (i = 0; i < primeiro_espaco; i++) {
 		cliente->rest.end.endereco[i] = toupper(cliente->rest.end.endereco[i]);
 	}
 
@@ -2030,8 +1345,7 @@ int cadastro_restaurante(struct Cliente *cliente)
 	scanf(" %10s", cliente->rest.end.cep);
 
 	printf("Digite o numero do restaurante: ");
-	if (scanf(" %d", &cliente->rest.end.numero) != 1)
-	{
+	if (scanf(" %d", &cliente->rest.end.numero) != 1) {
 		limparBuffer();
 		cliente->rest.end.numero = 0;
 	}
@@ -2039,15 +1353,13 @@ int cadastro_restaurante(struct Cliente *cliente)
 	printf("Digite o CNPJ: ");
 	scanf(" %s", cnpj);
 
-	char *dias_semana[] = {"Segunda-feira", "Terca-feira", "Quarta-feira", "Quinta-feira",
-				  "Sexta-feira",   "Sabado",      "Domingo"};
+	char *dias_semana[] = {"Segunda-feira", "Terca-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sabado", "Domingo"};
 
 	printf("\n+------------------------------------------------------------------+\n");
 	printf("|          CADASTRO DE HORARIOS POR DIA DA SEMANA                  |\n");
 	printf("+------------------------------------------------------------------+\n\n");
 
-	for (d = 0; d < 7; d++)
-	{
+	for (d = 0; d < 7; d++) {
 		printf("--- %s ---\n\n", dias_semana[d]);
 		printf("Horario de abertura (HH:MM): ");
 		scanf(" %5s", cliente->rest.horarios[d].abertura);
@@ -2080,8 +1392,7 @@ int cadastro_restaurante(struct Cliente *cliente)
 }
 
 // Funcao de cadastro cliente
-int cadastro(struct Cliente *cliente)
-{
+int cadastro(struct Cliente *cliente) {
 	char nome[50];
 	char email[50];
 	char senha[20];
@@ -2092,17 +1403,14 @@ int cadastro(struct Cliente *cliente)
 	printf("Digite seu nome: ");
 	scanf(" %[^\n]s", nome);
 
-	for (i = 0; i < (int) strlen(nome); i++)
-	{
-		if (nome[i] == ' ')
-		{
+	for (i = 0; i < (int)strlen(nome); i++) {
+		if (nome[i] == ' ') {
 			ultimo_espaco = i + 1;
 		}
 	}
 
 	nome[0] = toupper(nome[0]);
-	if (ultimo_espaco > 0)
-	{
+	if (ultimo_espaco > 0) {
 		nome[ultimo_espaco] = toupper(nome[ultimo_espaco]);
 	}
 
@@ -2122,9 +1430,8 @@ int cadastro(struct Cliente *cliente)
 }
 
 // funcao cadastro entregador ------------
-int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente)
-{
-	(void) entregador; // Parametro nao utilizado no momento
+int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente) {
+	(void)entregador; // Parametro nao utilizado no momento
 	char tipo_veiculo[10];
 	char placa[8];
 	int idade = 0;
@@ -2137,12 +1444,9 @@ int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente)
 	printf("Insira sua idade: ");
 	scanf("%d", &idade);
 
-	if (idade >= 18)
-	{
+	if (idade >= 18) {
 		printf("Idade validada.");
-	}
-	else
-	{
+	} else {
 		printf("Voce deve ser maior de 18 anos para ser um entregador!");
 	}
 
@@ -2151,13 +1455,10 @@ int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente)
 
 	tipo_veiculo[0] = toupper(tipo_veiculo[0]);
 
-	if (!(strcmp(tipo_veiculo, "bicicleta")))
-	{
+	if (!(strcmp(tipo_veiculo, "bicicleta"))) {
 		printf("Insira a placa: ");
 		scanf("%[^\n]s", placa);
-	}
-	else
-	{
+	} else {
 		printf("Nao tem placa para bicicleta.");
 	}
 
@@ -2165,23 +1466,20 @@ int cadastro_entregador(struct Entregador *entregador, struct Cliente *cliente)
 }
 
 // Funcao de login
-int logar(struct Cliente *cliente)
-{
+int logar(struct Cliente *cliente) {
 	char email[50];
 	char senha[20];
 
 	login_ui();
 
-	do
-	{
+	do {
 		printf("Digite seu email: ");
 		scanf(" %s", email);
 
 		printf("Digite sua senha: ");
 		scanf(" %s", senha);
 
-		if (strcmp(email, cliente->email) != 0 || strcmp(senha, cliente->senha) != 0)
-		{
+		if (strcmp(email, cliente->email) != 0 || strcmp(senha, cliente->senha) != 0) {
 			login_error_ui();
 			printf("Email ou senha incorretos! Tente novamente.\n");
 		}
@@ -2194,8 +1492,7 @@ int logar(struct Cliente *cliente)
 }
 
 // Funcao de endereco
-int endereco(struct Endereco *end)
-{
+int endereco(struct Endereco *end) {
 	endereco_ui();
 
 	printf("Digite o endereco: ");
@@ -2208,8 +1505,7 @@ int endereco(struct Endereco *end)
 	scanf(" %10s", end->cep);
 
 	printf("Digite o numero: ");
-	if (scanf(" %d", &end->numero) != 1)
-	{
+	if (scanf(" %d", &end->numero) != 1) {
 		limparBuffer();
 		end->numero = 0;
 	}
@@ -2219,21 +1515,16 @@ int endereco(struct Endereco *end)
 	return 0;
 }
 
-char *alterar_senha(struct Cliente *cliente)
-{
+char *alterar_senha(struct Cliente *cliente) {
 	int cont = 0;
 	char senha[20];
 	strcpy(senha, cliente->senha);
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Senha incorreta! Tente novamente: ");
 			scanf(" %s", senha);
-		}
-		else
-		{
+		} else {
 			printf("Insira a Senha atual para confirmacao: ");
 			scanf(" %s", senha);
 		}
@@ -2241,15 +1532,11 @@ char *alterar_senha(struct Cliente *cliente)
 	} while (strcmp(senha, cliente->senha) != 0);
 
 	cont = 0;
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Senha igual a anterior! Tente novamente: ");
 			scanf(" %s", cliente->senha);
-		}
-		else
-		{
+		} else {
 			printf("\nInsira Senha nova: ");
 			scanf(" %s", cliente->senha);
 		}
@@ -2259,27 +1546,20 @@ char *alterar_senha(struct Cliente *cliente)
 	return cliente->senha;
 }
 
-int excluir_conta(struct Cliente *cliente)
-{
+int excluir_conta(struct Cliente *cliente) {
 	char delete_confirm;
 	int cont = 0;
 	char senha[20];
 
-	printf("Tem certeza que deseja excluir sua "
-		"conta? Essa acao e irreversivel. (s/n): ");
+	printf("Tem certeza que deseja excluir sua conta? Essa acao e irreversivel. (s/n): ");
 	scanf(" %c", &delete_confirm);
 
-	if (delete_confirm == 's' || delete_confirm == 'S')
-	{
-		do
-		{
-			if (cont > 0)
-			{
+	if (delete_confirm == 's' || delete_confirm == 'S') {
+		do {
+			if (cont > 0) {
 				printf("Senha incorreta! Tente novamente: ");
 				scanf(" %19s", senha);
-			}
-			else
-			{
+			} else {
 				printf("\nInsira a Senha atual para confirmacao: ");
 				scanf(" %19s", senha);
 			}
@@ -2290,24 +1570,17 @@ int excluir_conta(struct Cliente *cliente)
 		memset(cliente, 0, sizeof(struct Cliente));
 		printf("\nConta excluida com sucesso!\n");
 		return 1;
-	}
-	else
-	{
+	} else {
 		printf("\nOperacao cancelada. Sua conta nao foi excluida.\n");
 	}
 	return 0;
 }
 
 // Funcao de teste de codigo
-int testecodigo(struct Cliente *cliente)
-{
-
-	if (le_valida_verificacao(cliente))
-	{
+int testecodigo(struct Cliente *cliente) {
+	if (le_valida_verificacao(cliente)) {
 		printf("\nAcesso Concedido. Bem-vindo ao sistema\n");
-	}
-	else
-	{
+	} else {
 		printf("Acesso Negado, tente novamente.\n");
 	}
 
@@ -2315,8 +1588,7 @@ int testecodigo(struct Cliente *cliente)
 }
 
 // Funcao para gerar codigo aleatorio
-int gerar_codigo()
-{
+int gerar_codigo() {
 	int codigo;
 
 	// Gera um numero aleatorio de 6 digitos (100000 a 999999)
@@ -2326,8 +1598,7 @@ int gerar_codigo()
 }
 
 // Funcao para ler e validar o codigo
-int le_valida_verificacao(struct Cliente *cliente)
-{
+int le_valida_verificacao(struct Cliente *cliente) {
 	int codigo_correto = 0;
 	codigo_correto = gerar_codigo();
 	int codigo_inserido = 0;
@@ -2335,24 +1606,18 @@ int le_valida_verificacao(struct Cliente *cliente)
 	code_ui(cliente);
 	printf("Insira o codigo (%d): ", codigo_correto);
 
-	if (scanf("%d", &codigo_inserido) != 1)
-	{
+	if (scanf("%d", &codigo_inserido) != 1) {
 		limparBuffer();
 		codigo_inserido = 0;
 	}
 
-	do
-	{
-		if (codigo_inserido == codigo_correto)
-		{
+	do {
+		if (codigo_inserido == codigo_correto) {
 			printf("\nCodigo validado com sucesso.\n");
 			break;
-		}
-		else
-		{
+		} else {
 			printf("Codigo Invalido! Tente novamente (%d): ", codigo_correto);
-			if (scanf("%d", &codigo_inserido) != 1)
-			{
+			if (scanf("%d", &codigo_inserido) != 1) {
 				limparBuffer();
 				codigo_inserido = 0;
 			}
@@ -2363,8 +1628,7 @@ int le_valida_verificacao(struct Cliente *cliente)
 }
 
 // Procedimento paar pausar a interface do usuario
-int enter_ui()
-{
+int enter_ui() {
 	printf("\n>> Pressione ENTER para continuar...");
 	limparBuffer();
 	getchar();
@@ -2372,8 +1636,7 @@ int enter_ui()
 }
 
 // Procedimento para limpar a tela de acordo com o sistema operacional
-void clearScreen()
-{
+void clearScreen() {
 #ifdef _WIN32
 	system("cls");
 #else
@@ -2382,16 +1645,14 @@ void clearScreen()
 }
 
 // Procedimento para limpar o buffer do teclado
-void limparBuffer()
-{
+void limparBuffer() {
 	int c;
 	while ((c = getchar()) != '\n' && c != EOF)
 		;
 }
 
 // Procedimento para configurar a acentuacao
-void configurarAcentuacao()
-{
+void configurarAcentuacao() {
 #ifdef _WIN32
 	// Habilita suporte a UTF-8 no console do Windows
 	SetConsoleOutputCP(CP_UTF8);
@@ -2406,227 +1667,127 @@ void configurarAcentuacao()
 }
 
 // Procedimentos de Interface do Usuario (UI)
-void menu_ui()
-{
+void menu_ui() {
 	clearScreen();
-	printf("====================================================================="
-		"==========\n");
-	printf("||                                                                   "
-		"        ||\n");
-	printf("||      IIIII  FFFFFF  OOO   OOO   DDD           TTTTTTT  U   U  "
-		"IIIII       ||\n");
-	printf("||        I    F      O   O O   O  D  D             T     U   U    I "
-		"        ||\n");
-	printf("||        I    FFFF   O   O O   O  D  D             T     U   U    I "
-		"        ||\n");
-	printf("||        I    F      O   O O   O  D  D             T     U   U    I "
-		"        ||\n");
-	printf("||      IIIII  F       OOO   OOO   DDD              T      UUU   "
-		"IIIII       ||\n");
-	printf("||                                                                   "
-		"        ||\n");
-	printf("====================================================================="
-		"==========\n");
-	printf("||                                                                   "
-		"        ||\n");
-	printf("||        Bem-vindo a sua experiencia de delivery direto no "
-		"terminal!        ||\n");
-	printf("||                                                                   "
-		"        ||\n");
-	printf("====================================================================="
-		"==========\n\n");
-	printf("                         Selecione o modo de entrada:                "
-		"          \n\n");
-	printf("   "
-		"+--------------------------------------------------------------------"
-		"---+   \n\n");
+	printf("===============================================================================\n");
+	printf("||                                                                           ||\n");
+	printf("||      IIIII  FFFFFF  OOO   OOO   DDD           TTTTTTT  U   U  IIIII       ||\n");
+	printf("||        I    F      O   O O   O  D  D             T     U   U    I         ||\n");
+	printf("||        I    FFFF   O   O O   O  D  D             T     U   U    I         ||\n");
+	printf("||        I    F      O   O O   O  D  D             T     U   U    I         ||\n");
+	printf("||      IIIII  F       OOO   OOO   DDD              T      UUU   IIIII       ||\n");
+	printf("||                                                                           ||\n");
+	printf("===============================================================================\n");
+	printf("||                                                                           ||\n");
+	printf("||        Bem-vindo a sua experiencia de delivery direto no terminal!        ||\n");
+	printf("||                                                                           ||\n");
+	printf("===============================================================================\n\n");
+	printf("                         Selecione o modo de entrada:                          \n\n");
+	printf("   +-----------------------------------------------------------------------+   \n\n");
 }
 
-void login_ui()
-{
+void login_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                         A C E S S A R   C O N T A                  "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("              Bem-vindo de volta! Informe seus dados para entrar.    "
-		"      \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                         A C E S S A R   C O N T A                       |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("              Bem-vindo de volta! Informe seus dados para entrar.          \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void login_error_ui()
-{
+void login_error_ui() {
 	clearScreen();
-	printf("+===================================================================="
-		"=====+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                    *** E-mail ou senha incorretos! ***             "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+===================================================================="
-		"=====+\n\n");
-	printf("                   Verifique seus dados e tente novamente.           "
-		"      \n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+=========================================================================+\n");
+	printf("|                                                                         |\n");
+	printf("|                    *** E-mail ou senha incorretos! ***                  |\n");
+	printf("|                                                                         |\n");
+	printf("+=========================================================================+\n\n");
+	printf("                   Verifique seus dados e tente novamente.                 \n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void cadastro_ui()
-{
+void cadastro_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                          N O V O   C A D A S T R O                 "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("           Por favor, preencha os campos abaixo para criar sua "
-		"conta.      \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                          N O V O   C A D A S T R O                      |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("           Por favor, preencha os campos abaixo para criar sua conta.      \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void cadastro_feito_ui()
-{
+void cadastro_feito_ui() {
 	clearScreen();
-	printf("+===================================================================="
-		"=====+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                U S U A R I O  C A D A S T R A D O                  "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+===================================================================="
-		"=====+\n\n");
-	printf("                 Usuario ja cadastrado! Tente logar.                 "
-		"      \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+=========================================================================+\n");
+	printf("|                                                                         |\n");
+	printf("|                U S U A R I O  C A D A S T R A D O                       |\n");
+	printf("|                                                                         |\n");
+	printf("+=========================================================================+\n\n");
+	printf("                 Usuario ja cadastrado! Tente logar.                       \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void code_ui(struct Cliente *cliente)
-{
+void code_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                 V E R I F I C A C A O   D E   C O D I G O          "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("     Para finalizar seu cadastro, enviamos um codigo de verificacao "
-		"para:  \n\n");
-	printf("     E-mail: %s                                                      "
-		"       \n\n",
-		cliente->email);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                 V E R I F I C A C A O   D E   C O D I G O               |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("     Para finalizar seu cadastro, enviamos um codigo de verificacao para:  \n\n");
+	printf("     E-mail: %s                                                            \n\n", cliente->email);
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void endereco_ui()
-{
+void endereco_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                I N F O R M A C O E S   D E   E N T R E G A         "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("     Para finalizar, precisamos do seu endereco para entrega dos "
-		"pedidos   \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                I N F O R M A C O E S   D E   E N T R E G A              |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("     Para finalizar, precisamos do seu endereco para entrega dos pedidos   \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void modo_select_entrada_ui()
-{
+void modo_select_entrada_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                     S E L E C A O  D E  E N T R A D A              "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                         O que voce deseja fazer?                    "
-		"      \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                     S E L E C A O  D E  E N T R A D A                   |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                         O que voce deseja fazer?                          \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void modo_cliente_ui(struct Cliente *cliente)
-{
+void modo_cliente_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                          M O D O   C L I E N T E                   "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                          M O D O   C L I E N T E                        |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
 	printf("                         O que voce deseja fazer?\n");
-	printf("                Endereco: %s, %s, %d, CEP: %s  \n", cliente->end.endereco,
-		cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("                Endereco: %s, %s, %d, CEP: %s  \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void home_cliente_ui() // struct Cliente *cliente
-{
+void home_cliente_ui() { // struct Cliente *cliente
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                                H O M E                             "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                      O que voce esta procurando?                    "
-		"      \n\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                                H O M E                                  |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                      O que voce esta procurando?                          \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
 }
 
-void pagina_mcdonalds_ui()
-{
+void pagina_mcdonalds_ui() {
 	clearScreen();
 	printf("\n");
 	printf("   +-----------------------------------------------------------------------+\n");
@@ -2639,8 +1800,7 @@ void pagina_mcdonalds_ui()
 	printf("   +-----------------------------------------------------------------------+\n\n");
 }
 
-void pagina_cocobambu_ui()
-{
+void pagina_cocobambu_ui() {
 	clearScreen();
 	printf("\n");
 	printf("   +-----------------------------------------------------------------------+\n");
@@ -2653,8 +1813,7 @@ void pagina_cocobambu_ui()
 	printf("   +-----------------------------------------------------------------------+\n\n");
 }
 
-void pagina_dominos_ui()
-{
+void pagina_dominos_ui() {
 	clearScreen();
 	printf("\n");
 	printf("   +-----------------------------------------------------------------------+\n");
@@ -2667,117 +1826,73 @@ void pagina_dominos_ui()
 	printf("   +-----------------------------------------------------------------------+\n\n");
 }
 
-void modo_entregador_ui(struct Cliente *cliente)
-{
+void modo_entregador_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                       M O D O   E N T R E G A D O R                "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                         O que voce deseja fazer?                    "
-		"      \n\n");
-	printf("                  Endereco: %s, %s, %d, CEP: %s                      "
-		"      \n",
-		cliente->end.endereco, cliente->end.logradouro, cliente->end.numero,
-		cliente->end.cep);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                       M O D O   E N T R E G A D O R                     |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                         O que voce deseja fazer?                          \n\n");
+	printf("                  Endereco: %s, %s, %d, CEP: %s                            \n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void modo_restaurante_ui(struct Cliente *cliente)
-{
+void modo_restaurante_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                       M O D O   R E S T A U R A N T E              "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                         O que voce deseja fazer?                    "
-		"      \n\n");
-	printf("                 Endereco: %s, %s, %d, CEP: %s                       "
-		"      \n",
-		cliente->rest.end.endereco, cliente->rest.end.logradouro, cliente->rest.end.numero,
-		cliente->end.cep);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                       M O D O   R E S T A U R A N T E                   |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                         O que voce deseja fazer?                          \n\n");
+	printf("                 Endereco: %s, %s, %d, CEP: %s                             \n", cliente->rest.end.endereco, cliente->rest.end.logradouro, cliente->rest.end.numero, cliente->end.cep);
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void atualizar_status_automatico(struct Pedido *pedido)
-{
-	/* Incrementa contador de visualizações */
+void atualizar_status_automatico(struct Pedido *pedido) {
+	/* Incrementa contador de visualiza��es */
 	pedido->visualizacoes++;
 
-	/* Calcula tempo decorrido desde a criação do pedido */
+	/* Calcula tempo decorrido desde a cria��o do pedido */
 	time_t tempo_atual = time(NULL);
 	double minutos_decorridos = difftime(tempo_atual, pedido->timestamp_criacao) / 60.0;
 
-	/* Atualiza status baseado no tempo e visualizações */
-	/* Cada visualização simula ~5 minutos de progresso */
+	/* Atualiza status baseado no tempo e visualiza��es */
+	/* Cada visualiza��o simula ~5 minutos de progresso */
 	double progresso_simulado = (pedido->visualizacoes * 5.0) + minutos_decorridos;
 
-	if (strcmp(pedido->status, "Entregue") == 0 || strcmp(pedido->status, "Cancelado") == 0)
-	{
-		/* Status finais não mudam */
+	if (strcmp(pedido->status, "Entregue") == 0 || strcmp(pedido->status, "Cancelado") == 0) {
+		/* Status finais n�o mudam */
 		return;
 	}
 
-	if (progresso_simulado < 3)
-	{
+	if (progresso_simulado < 3) {
 		strcpy(pedido->status, "Aguardando Confirmacao");
-	}
-	else if (progresso_simulado < 8)
-	{
+	} else if (progresso_simulado < 8) {
 		strcpy(pedido->status, "Confirmado");
-	}
-	else if (progresso_simulado < 20)
-	{
+	} else if (progresso_simulado < 20) {
 		strcpy(pedido->status, "Em Preparacao");
-	}
-	else if (progresso_simulado < 25)
-	{
+	} else if (progresso_simulado < 25) {
 		strcpy(pedido->status, "Pronto para Retirada");
-	}
-	else if (progresso_simulado < 40)
-	{
+	} else if (progresso_simulado < 40) {
 		strcpy(pedido->status, "Saiu para Entrega");
-	}
-	else
-	{
+	} else {
 		strcpy(pedido->status, "Entregue");
 	}
 }
 
-void pedidos_cliente_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente)
-{
+void pedidos_cliente_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                      P E D I D O S   C L I E N T E                 "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                      P E D I D O S   C L I E N T E                      |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
 
 	printf("  >> Status dos pedidos atualizados automaticamente! <<\n\n");
 
-	if (num_pedidos == 0)
-	{
+	if (num_pedidos == 0) {
 		printf("  Voce ainda nao fez nenhum pedido.\n\n");
 		return;
 	}
@@ -2785,11 +1900,9 @@ void pedidos_cliente_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente
 	int i, j;
 	int pedidos_cliente = 0;
 
-	for (i = 0; i < num_pedidos; i++)
-	{
+	for (i = 0; i < num_pedidos; i++) {
 		/* Verifica se o pedido pertence ao cliente logado */
-		if (strcmp(pedidos[i].cpf_cliente, cliente->cpf) == 0)
-		{
+		if (strcmp(pedidos[i].cpf_cliente, cliente->cpf) == 0) {
 			/* Atualiza status automaticamente */
 			atualizar_status_automatico(&pedidos[i]);
 			pedidos_cliente++;
@@ -2811,130 +1924,76 @@ void pedidos_cliente_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente
 			else if (strcmp(pedidos[i].status, "Cancelado") == 0)
 				strcpy(progresso, "[    X       ] Cancelado");
 
-			printf("  "
-				"+------------------------------------------------------------------+"
-				"\n");
+			printf("  +------------------------------------------------------------------+\n");
 			printf("  | Pedido #%d - %-52s |\n", pedidos[i].id, pedidos[i].status);
 			printf("  | Progresso: %-53s |\n", progresso);
-			printf("  "
-				"+------------------------------------------------------------------+"
-				"\n");
+			printf("  +------------------------------------------------------------------+\n");
 			printf("  | Restaurante: %-51s |\n", pedidos[i].nome_restaurante);
 			printf("  | Data/Hora: %-53s |\n", pedidos[i].data_hora);
-			printf("  | Itens:                                                           "
-				"|\n");
+			printf("  | Itens:                                                           |\n");
 
-			for (j = 0; j < pedidos[i].num_itens; j++)
-			{
-				printf("  |   - %dx %-37s R$ %-16.2f |\n",
-					pedidos[i].itens[j].quantidade, pedidos[i].itens[j].nome_produto,
-					pedidos[i].itens[j].subtotal);
+			for (j = 0; j < pedidos[i].num_itens; j++) {
+				printf("  |   - %dx %-37s R$ %-16.2f |\n", pedidos[i].itens[j].quantidade, pedidos[i].itens[j].nome_produto, pedidos[i].itens[j].subtotal);
 			}
 
 			printf("  | Total: R$ %-54.2f |\n", pedidos[i].valor_total);
 			printf("  | Forma de Pagamento: %-44s |\n", pedidos[i].forma_pagamento);
 			printf("  | Endereco: %-54s |\n", pedidos[i].endereco_entrega.endereco);
-			printf("  "
-				"+------------------------------------------------------------------+"
-				"\n\n");
+			printf("  +------------------------------------------------------------------+\n\n");
 		}
 	}
 
-	if (pedidos_cliente == 0)
-	{
+	if (pedidos_cliente == 0) {
 		printf("  Voce ainda nao fez nenhum pedido.\n\n");
 	}
 }
 
-void perfil_cliente_ui(struct Cliente *cliente)
-{
+void perfil_cliente_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                       P E R F I L   D O   C L I E N T E            "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                 Nome do Perfil:%s | Email:%s                        "
-		"      \n\n",
-		cliente->nome, cliente->email);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
-	printf("Endereco de Entrega: %s, %s, %d, CEP: %s                            "
-		"      \n\n",
-		cliente->end.endereco, cliente->end.logradouro, cliente->end.numero,
-		cliente->end.cep);
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                       P E R F I L   D O   C L I E N T E                 |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                 Nome do Perfil:%s | Email:%s                              \n\n", cliente->nome, cliente->email);
+	printf("  +---------------------------------------------------------------------+  \n\n");
+	printf("Endereco de Entrega: %s, %s, %d, CEP: %s                                  \n\n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
 }
 
-void editar_perfil_cliente_ui(struct Cliente *cliente)
-{
+void editar_perfil_cliente_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                 E D I T A R   P E R F I L   D O   C L I E N T E    "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                 Nome do Perfil:%s | Email:%s                        "
-		"      \n\n",
-		cliente->nome, cliente->email);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                 E D I T A R   P E R F I L   D O   C L I E N T E         |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                 Nome do Perfil:%s | Email:%s                              \n\n", cliente->nome, cliente->email);
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void alterar_senha_cliente_ui(struct Cliente *cliente)
-{
+void alterar_senha_cliente_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                 A L T E R A R   S E N H A   D O   C L I E N T E    "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                 Nome do Perfil:%s | Email:%s                        "
-		"      \n\n",
-		cliente->nome, cliente->email);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                 A L T E R A R   S E N H A   D O   C L I E N T E         |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                 Nome do Perfil:%s | Email:%s                              \n\n", cliente->nome, cliente->email);
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void excluir_conta_cliente_ui()
-{
+void excluir_conta_cliente_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|>>>>>>>>>>>> E X C L U I R   C O N T A   D O   C L I E N T E "
-		"<<<<<<<<<<<<|\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("    Tem certeza que deseja excluir sua conta? Esta acao e "
-		"irreversivel     \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|>>>>>>>>>>>> E X C L U I R   C O N T A   D O   C L I E N T E <<<<<<<<<<<<|\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("    Tem certeza que deseja excluir sua conta? Esta acao e irreversivel     \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void restaurante_dashboard_ui(struct Cliente *cliente)
-{
+void restaurante_dashboard_ui(struct Cliente *cliente) {
 	clearScreen();
 	printf("+--------------------------------------------------------------------------+\n");
 	printf("|                                                                          |\n");
@@ -2953,7 +2012,7 @@ void restaurante_dashboard_ui(struct Cliente *cliente)
 	printf("  |  Telefone: %-57s |\n", cliente->rest.telefone_restaurante);
 	printf("  +----------------------------------------------------------------------+\n\n");
 
-	// Estatísticas do dia
+	// Estat�sticas do dia
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  ESTATISTICAS DO DIA                                                 |\n");
 	printf("  +----------------------------------------------------------------------+\n");
@@ -2963,7 +2022,7 @@ void restaurante_dashboard_ui(struct Cliente *cliente)
 	printf("  |  Faturamento Hoje: R$ 456,80                                         |\n");
 	printf("  +----------------------------------------------------------------------+\n\n");
 
-	// Estatísticas gerais
+	// Estat�sticas gerais
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  ESTATISTICAS GERAIS                                                 |\n");
 	printf("  +----------------------------------------------------------------------+\n");
@@ -2973,24 +2032,20 @@ void restaurante_dashboard_ui(struct Cliente *cliente)
 	printf("  |  Clientes Ativos: 89                                                 |\n");
 	printf("  +----------------------------------------------------------------------+\n\n");
 
-	// Horário de funcionamento
+	// Hor�rio de funcionamento
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  HORARIO DE FUNCIONAMENTO                                            |\n");
 	printf("  +----------------------------------------------------------------------+\n");
 
-	char *dias_dashboard[] = {"Segunda", "Terca",  "Quarta", "Quinta",
-				     "Sexta",	  "Sabado", "Domingo"};
+	char *dias_dashboard[] = {"Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"};
 	int i;
-	for (i = 0; i < 7; i++)
-	{
-		printf("  |  %-10s: %s - %-47s |\n", dias_dashboard[i],
-			cliente->rest.horarios[i].abertura, cliente->rest.horarios[i].fechamento);
+	for (i = 0; i < 7; i++) {
+		printf("  |  %-10s: %s - %-47s |\n", dias_dashboard[i], cliente->rest.horarios[i].abertura, cliente->rest.horarios[i].fechamento);
 	}
 	printf("  +----------------------------------------------------------------------+\n\n");
 }
 
-void restaurante_pedidos_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente)
-{
+void restaurante_pedidos_ui(struct Pedido pedidos[], int num_pedidos, struct Cliente *cliente) {
 	clearScreen();
 	printf("+--------------------------------------------------------------------------+\n");
 	printf("|                                                                          |\n");
@@ -2998,15 +2053,10 @@ void restaurante_pedidos_ui(struct Pedido pedidos[], int num_pedidos, struct Cli
 	printf("|                                                                          |\n");
 	printf("+--------------------------------------------------------------------------+\n\n");
 
-	if (num_pedidos == 0)
-	{
-		printf("  "
-			"+----------------------------------------------------------------------+\n");
-		printf("  |  Nenhum pedido recebido ainda.                                       "
-			"|\n");
-		printf("  "
-			"+----------------------------------------------------------------------+"
-			"\n\n");
+	if (num_pedidos == 0) {
+		printf("  +----------------------------------------------------------------------+\n");
+		printf("  |  Nenhum pedido recebido ainda.                                       |\n");
+		printf("  +----------------------------------------------------------------------+\n\n");
 		return;
 	}
 
@@ -3017,29 +2067,21 @@ void restaurante_pedidos_ui(struct Pedido pedidos[], int num_pedidos, struct Cli
 	int i, j;
 	float valor_total_pedidos = 0;
 
-	for (i = 0; i < num_pedidos; i++)
-	{
-		printf("  "
-			"+----------------------------------------------------------------------+\n");
+	for (i = 0; i < num_pedidos; i++) {
+		printf("  +----------------------------------------------------------------------+\n");
 		printf("  | Pedido #%d - %-56s |\n", pedidos[i].id, pedidos[i].status);
-		printf("  "
-			"+----------------------------------------------------------------------+\n");
+		printf("  +----------------------------------------------------------------------+\n");
 		printf("  | Cliente: %-59s |\n", pedidos[i].cpf_cliente);
 		printf("  | Horario: %-59s |\n", pedidos[i].data_hora);
-		printf("  | Itens:                                                               "
-			"|\n");
+		printf("  | Itens:                                                               |\n");
 
-		for (j = 0; j < pedidos[i].num_itens; j++)
-		{
-			printf("  |   - %dx %-42s R$ %-15.2f |\n", pedidos[i].itens[j].quantidade,
-				pedidos[i].itens[j].nome_produto, pedidos[i].itens[j].subtotal);
+		for (j = 0; j < pedidos[i].num_itens; j++) {
+			printf("  |   - %dx %-42s R$ %-15.2f |\n", pedidos[i].itens[j].quantidade, pedidos[i].itens[j].nome_produto, pedidos[i].itens[j].subtotal);
 		}
 
 		printf("  | Total: R$ %-58.2f |\n", pedidos[i].valor_total);
 		printf("  | Forma de Pagamento: %-48s |\n", pedidos[i].forma_pagamento);
-		printf("  "
-			"+----------------------------------------------------------------------+"
-			"\n\n");
+		printf("  +----------------------------------------------------------------------+\n\n");
 
 		valor_total_pedidos += pedidos[i].valor_total;
 	}
@@ -3053,8 +2095,7 @@ void restaurante_pedidos_ui(struct Pedido pedidos[], int num_pedidos, struct Cli
 	printf("  +----------------------------------------------------------------------+\n\n");
 }
 
-void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos)
-{
+void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos) {
 	int opcao_pedido, opcao_status;
 
 	printf("\n  +----------------------------------------------------------------------+\n");
@@ -3062,8 +2103,7 @@ void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos)
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  | Deseja atualizar o status de algum pedido? (0 - Nao): ");
 
-	if (scanf("%d", &opcao_pedido) != 1)
-	{
+	if (scanf("%d", &opcao_pedido) != 1) {
 		limparBuffer();
 		enter_ui();
 		return;
@@ -3071,13 +2111,11 @@ void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos)
 
 	limparBuffer();
 
-	if (opcao_pedido == 0)
-	{
+	if (opcao_pedido == 0) {
 		return;
 	}
 
-	if (opcao_pedido < 1 || opcao_pedido > num_pedidos)
-	{
+	if (opcao_pedido < 1 || opcao_pedido > num_pedidos) {
 		printf("\n  Pedido invalido!\n");
 		enter_ui();
 		return;
@@ -3085,17 +2123,14 @@ void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos)
 
 	int indice = -1;
 	int i;
-	for (i = 0; i < num_pedidos; i++)
-	{
-		if (pedidos[i].id == opcao_pedido)
-		{
+	for (i = 0; i < num_pedidos; i++) {
+		if (pedidos[i].id == opcao_pedido) {
 			indice = i;
 			break;
 		}
 	}
 
-	if (indice == -1)
-	{
+	if (indice == -1) {
 		printf("\n  Pedido nao encontrado!\n");
 		enter_ui();
 		return;
@@ -3116,8 +2151,7 @@ void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos)
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  Escolha o novo status: ");
 
-	if (scanf("%d", &opcao_status) != 1)
-	{
+	if (scanf("%d", &opcao_status) != 1) {
 		limparBuffer();
 		printf("\n  Opcao invalida!\n");
 		enter_ui();
@@ -3126,33 +2160,39 @@ void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos)
 
 	limparBuffer();
 
-	switch (opcao_status)
-	{
-	case 1:
-		strcpy(pedidos[indice].status, "Aguardando Confirmacao");
-		break;
-	case 2:
-		strcpy(pedidos[indice].status, "Confirmado");
-		break;
-	case 3:
-		strcpy(pedidos[indice].status, "Em Preparacao");
-		break;
-	case 4:
-		strcpy(pedidos[indice].status, "Pronto para Retirada");
-		break;
-	case 5:
-		strcpy(pedidos[indice].status, "Saiu para Entrega");
-		break;
-	case 6:
-		strcpy(pedidos[indice].status, "Entregue");
-		break;
-	case 7:
-		strcpy(pedidos[indice].status, "Cancelado");
-		break;
-	default:
-		printf("\n  Opcao invalida!\n");
-		enter_ui();
-		return;
+	switch (opcao_status) {
+		case 1:
+			strcpy(pedidos[indice].status, "Aguardando Confirmacao");
+			break;
+
+		case 2:
+			strcpy(pedidos[indice].status, "Confirmado");
+			break;
+
+		case 3:
+			strcpy(pedidos[indice].status, "Em Preparacao");
+			break;
+
+		case 4:
+			strcpy(pedidos[indice].status, "Pronto para Retirada");
+			break;
+
+		case 5:
+			strcpy(pedidos[indice].status, "Saiu para Entrega");
+			break;
+
+		case 6:
+			strcpy(pedidos[indice].status, "Entregue");
+			break;
+
+		case 7:
+			strcpy(pedidos[indice].status, "Cancelado");
+			break;
+
+		default:
+			printf("\n  Opcao invalida!\n");
+			enter_ui();
+			return;
 	}
 
 	printf("\n  +----------------------------------------------------------------------+\n");
@@ -3163,8 +2203,7 @@ void gerenciar_status_pedido(struct Pedido pedidos[], int num_pedidos)
 	enter_ui();
 }
 
-void restaurante_perfil_ui(struct Cliente *cliente)
-{
+void restaurante_perfil_ui(struct Cliente *cliente) {
 	clearScreen();
 	printf("+--------------------------------------------------------------------------+\n");
 	printf("|                                                                          |\n");
@@ -3172,7 +2211,7 @@ void restaurante_perfil_ui(struct Cliente *cliente)
 	printf("|                                                                          |\n");
 	printf("+--------------------------------------------------------------------------+\n\n");
 
-	// Informações Básicas
+	// Informa��es B�sicas
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  INFORMACOES BASICAS                                                 |\n");
 	printf("  +----------------------------------------------------------------------+\n");
@@ -3183,7 +2222,7 @@ void restaurante_perfil_ui(struct Cliente *cliente)
 	printf("  |  CNPJ: %-61s |\n", cliente->rest.cnpj);
 	printf("  +----------------------------------------------------------------------+\n\n");
 
-	// Endereço
+	// Endere�o
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  ENDERECO                                                            |\n");
 	printf("  +----------------------------------------------------------------------+\n");
@@ -3193,21 +2232,19 @@ void restaurante_perfil_ui(struct Cliente *cliente)
 	printf("  |  CEP: %-62s |\n", cliente->rest.end.cep);
 	printf("  +----------------------------------------------------------------------+\n\n");
 
-	// Horário de Funcionamento
+	// Hor�rio de Funcionamento
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  HORARIO DE FUNCIONAMENTO                                            |\n");
 	printf("  +----------------------------------------------------------------------+\n");
 
 	char *dias_perfil[] = {"Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"};
 	int j;
-	for (j = 0; j < 7; j++)
-	{
-		printf("  |  %-10s: %s - %-47s |\n", dias_perfil[j],
-			cliente->rest.horarios[j].abertura, cliente->rest.horarios[j].fechamento);
+	for (j = 0; j < 7; j++) {
+		printf("  |  %-10s: %s - %-47s |\n", dias_perfil[j], cliente->rest.horarios[j].abertura, cliente->rest.horarios[j].fechamento);
 	}
 	printf("  +----------------------------------------------------------------------+\n\n");
 
-	// Status e Estatísticas
+	// Status e Estat�sticas
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  STATUS E ESTATISTICAS                                               |\n");
 	printf("  +----------------------------------------------------------------------+\n");
@@ -3218,7 +2255,7 @@ void restaurante_perfil_ui(struct Cliente *cliente)
 	printf("  |  Tempo Medio de Entrega: 35 minutos                                  |\n");
 	printf("  +----------------------------------------------------------------------+\n\n");
 
-	// Informações Adicionais
+	// Informa��es Adicionais
 	printf("  +----------------------------------------------------------------------+\n");
 	printf("  |  INFORMACOES ADICIONAIS                                              |\n");
 	printf("  +----------------------------------------------------------------------+\n");
@@ -3229,260 +2266,150 @@ void restaurante_perfil_ui(struct Cliente *cliente)
 	printf("  +----------------------------------------------------------------------+\n\n");
 }
 
-void restaurante_configuracoes_ui()
-{
+void restaurante_configuracoes_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|               R E S T A U R A N T E   C O N F I G U R A C O E S    "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                     Ajuste as configuracoes do restaurante:         "
-		"      \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|               R E S T A U R A N T E   C O N F I G U R A C O E S         |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                     Ajuste as configuracoes do restaurante:               \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void status_restaurante_ui(struct Cliente *cliente)
-{
+void status_restaurante_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                   S T A T U S   D O   R E S T A U R A N T E        "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                     Status atual do restaurante: %s                 "
-		"      \n\n",
-		cliente->rest.status == 'a' ? "Aberto" : "Fechado");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                   S T A T U S   D O   R E S T A U R A N T E             |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                     Status atual do restaurante: %s                       \n\n", cliente->rest.status == 'a' ? "Aberto" : "Fechado");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void dados_restaurante_ui()
-{
+void dados_restaurante_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                 D A D O S   D O   R E S T A U R A N T E            "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("                       Informacoes do restaurante:                   "
-		"      \n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                 D A D O S   D O   R E S T A U R A N T E                 |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("                       Informacoes do restaurante:                         \n");
 }
 
-void horario_funcionamento_ui(struct Cliente *cliente)
-{
+void horario_funcionamento_ui(struct Cliente *cliente) {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|             H O R A R I O   D E   F U N C I O N A M E N T O        "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|             H O R A R I O   D E   F U N C I O N A M E N T O             |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
 
-	char *dias_horario[] = {"Segunda-feira", "Terca-feira", "Quarta-feira", "Quinta-feira",
-				   "Sexta-feira",   "Sabado",	"Domingo"};
+	char *dias_horario[] = {"Segunda-feira", "Terca-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sabado", "Domingo"};
 	int k;
-	for (k = 0; k < 7; k++)
-	{
-		printf("  %-15s: %s - %s\n", dias_horario[k], cliente->rest.horarios[k].abertura,
-			cliente->rest.horarios[k].fechamento);
+	for (k = 0; k < 7; k++) {
+		printf("  %-15s: %s - %s\n", dias_horario[k], cliente->rest.horarios[k].abertura, cliente->rest.horarios[k].fechamento);
 	}
 
-	printf("\n  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("\n  +---------------------------------------------------------------------+  \n\n");
 }
 
-void cadastro_restaurante_ui()
-{
+void cadastro_restaurante_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|                  C A D A S T R O   D O   R E S T A U R A N T E     "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
-	printf("     Por favor, preencha os campos abaixo para cadastrar o "
-		"restaurante     \n\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+  \n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|                  C A D A S T R O   D O   R E S T A U R A N T E          |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
+	printf("     Por favor, preencha os campos abaixo para cadastrar o restaurante     \n\n");
+	printf("  +---------------------------------------------------------------------+  \n\n");
 }
 
-void dados_gerais_restaurante_ui(struct Cliente *cliente)
-{
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
-	printf("  | DADOS GERAIS                                                     "
-		"   |\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
+void dados_gerais_restaurante_ui(struct Cliente *cliente) {
+	printf("  +---------------------------------------------------------------------+\n");
+	printf("  | DADOS GERAIS                                                        |\n");
+	printf("  +---------------------------------------------------------------------+\n");
 	printf("  | Nome:       %-54s  |\n", cliente->rest.nome_restaurante);
 	printf("  | CNPJ:       %-54s  |\n", cliente->rest.cnpj);
 	printf("  | Telefone:   %-54s  |\n", cliente->rest.telefone_restaurante);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n\n");
+	printf("  +---------------------------------------------------------------------+\n\n");
 
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
-	printf("  | ENDERECO                                                         "
-		"   |\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
+	printf("  +---------------------------------------------------------------------+\n");
+	printf("  | ENDERECO                                                            |\n");
+	printf("  +---------------------------------------------------------------------+\n");
 	printf("  | Endereco:   %-54s  |\n", cliente->rest.end.endereco);
 	printf("  | Logradouro: %-54s  |\n", cliente->rest.end.logradouro);
 	printf("  | Numero:     %-54d  |\n", cliente->rest.end.numero);
 	printf("  | CEP:        %-54s  |\n", cliente->rest.end.cep);
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n\n");
+	printf("  +---------------------------------------------------------------------+\n\n");
 
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
-	printf("  | HORARIOS DE FUNCIONAMENTO                                        "
-		"   |\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
+	printf("  +---------------------------------------------------------------------+\n");
+	printf("  | HORARIOS DE FUNCIONAMENTO                                           |\n");
+	printf("  +---------------------------------------------------------------------+\n");
 
 	char *dias[] = {"Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"};
 	int i;
-	for (i = 0; i < 7; i++)
-	{
-		printf("  | %-15s: %s - %-42s |\n", dias[i], cliente->rest.horarios[i].abertura,
-			cliente->rest.horarios[i].fechamento);
+	for (i = 0; i < 7; i++) {
+		printf("  | %-15s: %s - %-42s |\n", dias[i], cliente->rest.horarios[i].abertura, cliente->rest.horarios[i].fechamento);
 	}
 
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n\n");
+	printf("  +---------------------------------------------------------------------+\n\n");
 
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
-	printf("  | STATUS ATUAL                                                     "
-		"   |\n");
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n");
-	if (cliente->rest.status == 'a')
-	{
-		printf("  | >>>>>   A B E R T O   <<<<<                                    "
-			"     |\n");
+	printf("  +---------------------------------------------------------------------+\n");
+	printf("  | STATUS ATUAL                                                        |\n");
+	printf("  +---------------------------------------------------------------------+\n");
+	if (cliente->rest.status == 'a') {
+		printf("  | >>>>>   A B E R T O   <<<<<                                         |\n");
+	} else {
+		printf("  | >>>>>   F E C H A D O   <<<<<                                       |\n");
 	}
-	else
-	{
-		printf("  | >>>>>   F E C H A D O   <<<<<                                  "
-			"     |\n");
-	}
-	printf("  "
-		"+--------------------------------------------------------------------"
-		"-+\n\n");
+	printf("  +---------------------------------------------------------------------+\n\n");
 
 	enter_ui();
 }
 
-void login_nao_cadastrado_ui()
-{
+void login_nao_cadastrado_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"----------+\n");
-	printf("|                                                                    "
-		"          |\n");
-	printf("|                           USUARIO NAO CADASTRADO                   "
-		"          |\n");
-	printf("|                                                                    "
-		"          |\n");
-	printf("+--------------------------------------------------------------------"
-		"----------+\n\n");
+	printf("+------------------------------------------------------------------------------+\n");
+	printf("|                                                                              |\n");
+	printf("|                           USUARIO NAO CADASTRADO                             |\n");
+	printf("|                                                                              |\n");
+	printf("+------------------------------------------------------------------------------+\n\n");
 	printf("              Por favor, realize o cadastro antes de fazer login.\n\n");
-	printf("+--------------------------------------------------------------------"
-		"----------+\n\n");
+	printf("+------------------------------------------------------------------------------+\n\n");
 }
 
-void opcao_invalida_ui()
-{
+void opcao_invalida_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"----------+\n");
-	printf("|                                                                    "
-		"          |\n");
-	printf("|           O P C A O  I N V A L I D A !  T E N T E  N O V A M E N T "
-		"E         |\n");
-	printf("|                                                                    "
-		"          |\n");
-	printf("+--------------------------------------------------------------------"
-		"----------+\n");
+	printf("+------------------------------------------------------------------------------+\n");
+	printf("|                                                                              |\n");
+	printf("|           O P C A O  I N V A L I D A !  T E N T E  N O V A M E N T E         |\n");
+	printf("|                                                                              |\n");
+	printf("+------------------------------------------------------------------------------+\n");
 	enter_ui();
 }
 
-void editar_horario_semana_ui()
-{
+void editar_horario_semana_ui() {
 	clearScreen();
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|             E D I T A R   H O R A R I O   D A   S E M A N A        "
-		"     |\n");
-	printf("|                        ( S e g u n d a   -   S e x t a )           "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|             E D I T A R   H O R A R I O   D A   S E M A N A             |\n");
+	printf("|                        ( S e g u n d a   -   S e x t a )                |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
 }
 
-void editar_horario_fds_ui()
-{
-	printf("+--------------------------------------------------------------------"
-		"-----+\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("|    E D I T A R   H O R A R I O   D O   F I N A L   D E   S E M A N "
-		"A    |\n");
-	printf("|                    ( S a b a d o   -   D o m i n g o )             "
-		"     |\n");
-	printf("|                                                                    "
-		"     |\n");
-	printf("+--------------------------------------------------------------------"
-		"-----+\n\n");
+void editar_horario_fds_ui() {
+	printf("+-------------------------------------------------------------------------+\n");
+	printf("|                                                                         |\n");
+	printf("|    E D I T A R   H O R A R I O   D O   F I N A L   D E   S E M A N A    |\n");
+	printf("|                    ( S a b a d o   -   D o m i n g o )                  |\n");
+	printf("|                                                                         |\n");
+	printf("+-------------------------------------------------------------------------+\n\n");
 }
 
-void restaurante_dinamico_ui()
-{
+void restaurante_dinamico_ui() {
 	clearScreen();
 	printf("\n");
 	printf("   +-----------------------------------------------------------------------+\n");
@@ -3498,8 +2425,7 @@ void restaurante_dinamico_ui()
 
 // ==================== INICIALIZACAO DOS PRODUTOS DOS RESTAURANTES ====================
 
-void inicializar_produtos_mcdonalds(struct Produto produtos[], int *num_produtos)
-{
+void inicializar_produtos_mcdonalds(struct Produto produtos[], int *num_produtos) {
 	*num_produtos = 4;
 
 	/* Produto 1: Big Mac */
@@ -3511,7 +2437,7 @@ void inicializar_produtos_mcdonalds(struct Produto produtos[], int *num_produtos
 	strcpy(produtos[0].categoria, "Hamburgueres");
 	produtos[0].ativo = 1;
 
-	/* Produto 2: Quarteirão com Queijo */
+	/* Produto 2: Quarteir�o com Queijo */
 	produtos[1].id = 2;
 	strcpy(produtos[1].nome, "Quarteirao com Queijo");
 	strcpy(produtos[1].descricao, "Hamburguer, queijo, picles, cebola e ketchup");
@@ -3520,7 +2446,7 @@ void inicializar_produtos_mcdonalds(struct Produto produtos[], int *num_produtos
 	strcpy(produtos[1].categoria, "Hamburgueres");
 	produtos[1].ativo = 1;
 
-	/* Produto 3: Batata Frita Média */
+	/* Produto 3: Batata Frita M�dia */
 	produtos[2].id = 3;
 	strcpy(produtos[2].nome, "Batata Frita Media");
 	strcpy(produtos[2].descricao, "Batatas crocantes e sequinhas");
@@ -3539,11 +2465,10 @@ void inicializar_produtos_mcdonalds(struct Produto produtos[], int *num_produtos
 	produtos[3].ativo = 1;
 }
 
-void inicializar_produtos_cocobambu(struct Produto produtos[], int *num_produtos)
-{
+void inicializar_produtos_cocobambu(struct Produto produtos[], int *num_produtos) {
 	*num_produtos = 4;
 
-	/* Produto 1: Camarão Internacional */
+	/* Produto 1: Camar�o Internacional */
 	produtos[0].id = 1;
 	strcpy(produtos[0].nome, "Camarao Internacional");
 	strcpy(produtos[0].descricao, "Camaroes empanados com molho especial");
@@ -3561,7 +2486,7 @@ void inicializar_produtos_cocobambu(struct Produto produtos[], int *num_produtos
 	strcpy(produtos[1].categoria, "Frutos do Mar");
 	produtos[1].ativo = 1;
 
-	/* Produto 3: Risoto de Camarão */
+	/* Produto 3: Risoto de Camar�o */
 	produtos[2].id = 3;
 	strcpy(produtos[2].nome, "Risoto de Camarao");
 	strcpy(produtos[2].descricao, "Risoto cremoso com camaroes");
@@ -3580,8 +2505,7 @@ void inicializar_produtos_cocobambu(struct Produto produtos[], int *num_produtos
 	produtos[3].ativo = 1;
 }
 
-void inicializar_produtos_dominos(struct Produto produtos[], int *num_produtos)
-{
+void inicializar_produtos_dominos(struct Produto produtos[], int *num_produtos) {
 	*num_produtos = 4;
 
 	/* Produto 1: Pizza Calabresa */
@@ -3623,29 +2547,23 @@ void inicializar_produtos_dominos(struct Produto produtos[], int *num_produtos)
 
 // ==================== FUNCOES DO CARRINHO ====================
 
-void inicializar_carrinho(struct Carrinho *carrinho)
-{
+void inicializar_carrinho(struct Carrinho *carrinho) {
 	carrinho->num_itens = 0;
 	carrinho->valor_total = 0.0;
 	carrinho->taxa_entrega = 0.0;
 	strcpy(carrinho->nome_restaurante, "");
 }
 
-void adicionar_item_carrinho(struct Carrinho *carrinho, int id_produto, char nome[], float preco,
-				 int quantidade)
-{
-	if (carrinho->num_itens >= 50)
-	{
+void adicionar_item_carrinho(struct Carrinho *carrinho, int id_produto, char nome[], float preco, int quantidade) {
+	if (carrinho->num_itens >= 50) {
 		printf("Carrinho cheio! Nao e possivel adicionar mais itens.\n");
 		return;
 	}
 
 	/* Verifica se o produto ja esta no carrinho */
 	int i;
-	for (i = 0; i < carrinho->num_itens; i++)
-	{
-		if (carrinho->itens[i].id_produto == id_produto)
-		{
+	for (i = 0; i < carrinho->num_itens; i++) {
+		if (carrinho->itens[i].id_produto == id_produto) {
 			carrinho->itens[i].quantidade += quantidade;
 			carrinho->itens[i].subtotal =
 				carrinho->itens[i].quantidade * carrinho->itens[i].preco_unitario;
@@ -3665,42 +2583,36 @@ void adicionar_item_carrinho(struct Carrinho *carrinho, int id_produto, char nom
 	carrinho->itens[carrinho->num_itens] = novo_item;
 	carrinho->num_itens++;
 
-	printf("\n✓ Produto adicionado ao carrinho!\n");
+	printf("\n? Produto adicionado ao carrinho!\n");
 }
 
-void remover_item_carrinho(struct Carrinho *carrinho, int index)
-{
-	if (index < 0 || index >= carrinho->num_itens)
-	{
+void remover_item_carrinho(struct Carrinho *carrinho, int index) {
+	if (index < 0 || index >= carrinho->num_itens) {
 		printf("Item invalido!\n");
 		return;
 	}
 
 	/* Desloca os itens */
 	int i;
-	for (i = index; i < carrinho->num_itens - 1; i++)
-	{
+	for (i = index; i < carrinho->num_itens - 1; i++) {
 		carrinho->itens[i] = carrinho->itens[i + 1];
 	}
 
 	carrinho->num_itens--;
-	printf("\n✓ Item removido do carrinho!\n");
+	printf("\n? Item removido do carrinho!\n");
 }
 
-void limpar_carrinho(struct Carrinho *carrinho)
-{
+void limpar_carrinho(struct Carrinho *carrinho) {
 	carrinho->num_itens = 0;
 	carrinho->valor_total = 0.0;
 	carrinho->taxa_entrega = 0.0;
 	strcpy(carrinho->nome_restaurante, "");
 }
 
-float calcular_total_carrinho(struct Carrinho *carrinho)
-{
+float calcular_total_carrinho(struct Carrinho *carrinho) {
 	float total = 0.0;
 	int i;
-	for (i = 0; i < carrinho->num_itens; i++)
-	{
+	for (i = 0; i < carrinho->num_itens; i++) {
 		total += carrinho->itens[i].subtotal;
 	}
 	carrinho->valor_total = total + carrinho->taxa_entrega;
@@ -3709,10 +2621,8 @@ float calcular_total_carrinho(struct Carrinho *carrinho)
 
 // ==================== FUNCOES DE PRODUTOS ====================
 
-void cadastrar_produto_ui(struct Produto produtos[], int *num_produtos)
-{
-	if (*num_produtos >= 100)
-	{
+void cadastrar_produto_ui(struct Produto produtos[], int *num_produtos) {
+	if (*num_produtos >= 100) {
 		printf("\nLimite de produtos atingido!\n");
 		enter_ui();
 		return;
@@ -3733,16 +2643,14 @@ void cadastrar_produto_ui(struct Produto produtos[], int *num_produtos)
 	scanf(" %99[^\n]", novo.descricao);
 
 	printf("Preco (R$): ");
-	if (scanf("%f", &novo.preco) != 1 || novo.preco < 0)
-	{
+	if (scanf("%f", &novo.preco) != 1 || novo.preco < 0) {
 		limparBuffer();
 		printf("\nPreco invalido! Definindo como R$ 0.00.\n");
 		novo.preco = 0.0;
 	}
 
 	printf("Quantidade em estoque: ");
-	if (scanf("%d", &novo.quantidade) != 1 || novo.quantidade < 0)
-	{
+	if (scanf("%d", &novo.quantidade) != 1 || novo.quantidade < 0) {
 		limparBuffer();
 		printf("\nQuantidade invalida! Definindo como 0.\n");
 		novo.quantidade = 0;
@@ -3756,31 +2664,26 @@ void cadastrar_produto_ui(struct Produto produtos[], int *num_produtos)
 	produtos[*num_produtos] = novo;
 	(*num_produtos)++;
 
-	printf("\n✓ Produto cadastrado com sucesso! ID: %d\n", novo.id);
+	printf("\n? Produto cadastrado com sucesso! ID: %d\n", novo.id);
 	enter_ui();
 }
 
-void listar_produtos_ui(struct Produto produtos[], int num_produtos)
-{
+void listar_produtos_ui(struct Produto produtos[], int num_produtos) {
 	clearScreen();
 	printf("+-----------------------------------------------------------------------+\n");
 	printf("|                        PRODUTOS CADASTRADOS                           |\n");
 	printf("+-----------------------------------------------------------------------+\n\n");
 
-	if (num_produtos == 0)
-	{
+	if (num_produtos == 0) {
 		printf("Nenhum produto cadastrado ainda.\n\n");
 		enter_ui();
 		return;
 	}
 
 	int i;
-	for (i = 0; i < num_produtos; i++)
-	{
-		printf("ID: %d | %s %s\n", produtos[i].id, produtos[i].ativo ? "[✓]" : "[X]",
-			produtos[i].nome);
-		printf("   Categoria: %s | Preco: R$ %.2f | Estoque: %d\n", produtos[i].categoria,
-			produtos[i].preco, produtos[i].quantidade);
+	for (i = 0; i < num_produtos; i++) {
+		printf("ID: %d | %s %s\n", produtos[i].id, produtos[i].ativo ? "[?]" : "[X]", produtos[i].nome);
+		printf("   Categoria: %s | Preco: R$ %.2f | Estoque: %d\n", produtos[i].categoria, produtos[i].preco, produtos[i].quantidade);
 		printf("   Descricao: %s\n", produtos[i].descricao);
 		printf("-----------------------------------------------------------------------\n");
 	}
@@ -3788,10 +2691,8 @@ void listar_produtos_ui(struct Produto produtos[], int num_produtos)
 	enter_ui();
 }
 
-void editar_produto_ui(struct Produto produtos[], int num_produtos)
-{
-	if (num_produtos == 0)
-	{
+void editar_produto_ui(struct Produto produtos[], int num_produtos) {
+	if (num_produtos == 0) {
 		printf("\nNenhum produto cadastrado para editar.\n");
 		enter_ui();
 		return;
@@ -3804,17 +2705,15 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 
 	/* Lista os produtos */
 	int i;
-	for (i = 0; i < num_produtos; i++)
-	{
+	for (i = 0; i < num_produtos; i++) {
 		printf("[%d] %s - R$ %.2f (Estoque: %d) %s\n", produtos[i].id, produtos[i].nome,
-			produtos[i].preco, produtos[i].quantidade,
-			produtos[i].ativo ? "[Ativo]" : "[Inativo]");
+			   produtos[i].preco, produtos[i].quantidade,
+			   produtos[i].ativo ? "[Ativo]" : "[Inativo]");
 	}
 
 	int id_produto;
 	printf("\nDigite o ID do produto para editar (0 para cancelar): ");
-	if (scanf("%d", &id_produto) != 1)
-	{
+	if (scanf("%d", &id_produto) != 1) {
 		limparBuffer();
 		printf("ID invalido!\n");
 		enter_ui();
@@ -3826,17 +2725,14 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 
 	/* Busca o produto */
 	int encontrado = -1;
-	for (i = 0; i < num_produtos; i++)
-	{
-		if (produtos[i].id == id_produto)
-		{
+	for (i = 0; i < num_produtos; i++) {
+		if (produtos[i].id == id_produto) {
 			encontrado = i;
 			break;
 		}
 	}
 
-	if (encontrado == -1)
-	{
+	if (encontrado == -1) {
 		printf("\nProduto nao encontrado!\n");
 		enter_ui();
 		return;
@@ -3844,8 +2740,7 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 
 	clearScreen();
 	printf("+-----------------------------------------------------------------------+\n");
-	printf("|                    EDITANDO: %-20s                                    |\n",
-		produtos[encontrado].nome);
+	printf("|                    EDITANDO: %-20s                                    |\n", produtos[encontrado].nome);
 	printf("+-----------------------------------------------------------------------+\n\n");
 
 	printf("Deixe em branco para manter o valor atual\n\n");
@@ -3857,8 +2752,7 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 	char novo_nome[50];
 	fgets(novo_nome, sizeof(novo_nome), stdin);
 	novo_nome[strcspn(novo_nome, "\n")] = 0;
-	if (strlen(novo_nome) > 0)
-	{
+	if (strlen(novo_nome) > 0) {
 		strcpy(produtos[encontrado].nome, novo_nome);
 	}
 
@@ -3868,8 +2762,7 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 	char nova_desc[100];
 	fgets(nova_desc, sizeof(nova_desc), stdin);
 	nova_desc[strcspn(nova_desc, "\n")] = 0;
-	if (strlen(nova_desc) > 0)
-	{
+	if (strlen(nova_desc) > 0) {
 		strcpy(produtos[encontrado].descricao, nova_desc);
 	}
 
@@ -3877,8 +2770,7 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 	printf("\nPreco atual: R$ %.2f\n", produtos[encontrado].preco);
 	printf("Novo preco (0 para manter): ");
 	float novo_preco;
-	if (scanf("%f", &novo_preco) == 1 && novo_preco > 0)
-	{
+	if (scanf("%f", &novo_preco) == 1 && novo_preco > 0) {
 		produtos[encontrado].preco = novo_preco;
 	}
 
@@ -3886,8 +2778,7 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 	printf("\nEstoque atual: %d\n", produtos[encontrado].quantidade);
 	printf("Novo estoque (-1 para manter): ");
 	int nova_qtd;
-	if (scanf("%d", &nova_qtd) == 1 && nova_qtd >= 0)
-	{
+	if (scanf("%d", &nova_qtd) == 1 && nova_qtd >= 0) {
 		produtos[encontrado].quantidade = nova_qtd;
 	}
 
@@ -3898,19 +2789,16 @@ void editar_produto_ui(struct Produto produtos[], int num_produtos)
 	char nova_cat[30];
 	fgets(nova_cat, sizeof(nova_cat), stdin);
 	nova_cat[strcspn(nova_cat, "\n")] = 0;
-	if (strlen(nova_cat) > 0)
-	{
+	if (strlen(nova_cat) > 0) {
 		strcpy(produtos[encontrado].categoria, nova_cat);
 	}
 
-	printf("\n✓ Produto atualizado com sucesso!\n");
+	printf("\n? Produto atualizado com sucesso!\n");
 	enter_ui();
 }
 
-void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos)
-{
-	if (num_produtos == 0)
-	{
+void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos) {
+	if (num_produtos == 0) {
 		printf("\nNenhum produto cadastrado.\n");
 		enter_ui();
 		return;
@@ -3923,16 +2811,14 @@ void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos)
 
 	/* Lista os produtos */
 	int i;
-	for (i = 0; i < num_produtos; i++)
-	{
+	for (i = 0; i < num_produtos; i++) {
 		printf("[%d] %s - %s\n", produtos[i].id, produtos[i].nome,
-			produtos[i].ativo ? "[ATIVO]" : "[INATIVO]");
+			   produtos[i].ativo ? "[ATIVO]" : "[INATIVO]");
 	}
 
 	int id_produto;
 	printf("\nDigite o ID do produto (0 para cancelar): ");
-	if (scanf("%d", &id_produto) != 1)
-	{
+	if (scanf("%d", &id_produto) != 1) {
 		limparBuffer();
 		printf("ID invalido!\n");
 		enter_ui();
@@ -3944,17 +2830,14 @@ void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos)
 
 	/* Busca o produto */
 	int encontrado = -1;
-	for (i = 0; i < num_produtos; i++)
-	{
-		if (produtos[i].id == id_produto)
-		{
+	for (i = 0; i < num_produtos; i++) {
+		if (produtos[i].id == id_produto) {
 			encontrado = i;
 			break;
 		}
 	}
 
-	if (encontrado == -1)
-	{
+	if (encontrado == -1) {
 		printf("\nProduto nao encontrado!\n");
 		enter_ui();
 		return;
@@ -3963,13 +2846,11 @@ void ativar_desativar_produto_ui(struct Produto produtos[], int num_produtos)
 	/* Alterna o status */
 	produtos[encontrado].ativo = !produtos[encontrado].ativo;
 
-	printf("\n✓ Produto '%s' agora esta: %s\n", produtos[encontrado].nome,
-		produtos[encontrado].ativo ? "ATIVO" : "INATIVO");
+	printf("\n? Produto '%s' agora esta: %s\n", produtos[encontrado].nome, produtos[encontrado].ativo ? "ATIVO" : "INATIVO");
 	enter_ui();
 }
 
-int menu_gerenciar_produtos()
-{
+int menu_gerenciar_produtos() {
 	int opcao;
 	int cont = 0;
 
@@ -3979,16 +2860,13 @@ int menu_gerenciar_produtos()
 	printf("[4] >> Ativar/Desativar Produto\n\n");
 	printf("[5] >> Voltar\n\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &opcao) != 1)
-		{
+		if (scanf("%d", &opcao) != 1) {
 			limparBuffer();
 			opcao = 0;
 		}
@@ -3999,12 +2877,10 @@ int menu_gerenciar_produtos()
 	return opcao;
 }
 
-void menu_gerenciar_produtos_ui(struct Produto produtos[], int *num_produtos)
-{
+void menu_gerenciar_produtos_ui(struct Produto produtos[], int *num_produtos) {
 	int opcao;
 
-	do
-	{
+	do {
 		clearScreen();
 		printf("+-----------------------------------------------------------------------+\n");
 		printf("|                         GERENCIAR PRODUTOS                            |\n");
@@ -4012,26 +2888,26 @@ void menu_gerenciar_produtos_ui(struct Produto produtos[], int *num_produtos)
 
 		opcao = menu_gerenciar_produtos();
 
-		switch (opcao)
-		{
-		case 1:
-			cadastrar_produto_ui(produtos, num_produtos);
-			break;
+		switch (opcao) {
+			case 1:
+				cadastrar_produto_ui(produtos, num_produtos);
+				break;
 
-		case 2:
-			listar_produtos_ui(produtos, *num_produtos);
-			break;
+			case 2:
+				listar_produtos_ui(produtos, *num_produtos);
+				break;
 
-		case 3:
-			editar_produto_ui(produtos, *num_produtos);
-			break;
+			case 3:
+				editar_produto_ui(produtos, *num_produtos);
+				break;
 
-		case 4:
-			ativar_desativar_produto_ui(produtos, *num_produtos);
-			break;
+			case 4:
+				ativar_desativar_produto_ui(produtos, *num_produtos);
+				break;
 
-		case 5:
-			break;
+			case 5:
+
+				break;
 		}
 
 	} while (opcao != 5);
@@ -4039,8 +2915,7 @@ void menu_gerenciar_produtos_ui(struct Produto produtos[], int *num_produtos)
 
 // ==================== FUNCOES DE EXIBICAO E COMPRA ====================
 
-void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
-{
+void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos) {
 	clearScreen();
 	printf("\n");
 	printf("   +-----------------------------------------------------------------------+\n");
@@ -4049,8 +2924,7 @@ void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
 	printf("   |  * 5.0 - 20-30 min - R$ 8.00                                          |\n");
 	printf("   +-----------------------------------------------------------------------+\n\n");
 
-	if (num_produtos == 0)
-	{
+	if (num_produtos == 0) {
 		printf("   Nenhum produto cadastrado ainda.\n\n");
 		return;
 	}
@@ -4060,23 +2934,19 @@ void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
 
 	/* Identifica categorias unicas */
 	int i, j;
-	for (i = 0; i < num_produtos; i++)
-	{
+	for (i = 0; i < num_produtos; i++) {
 		if (!produtos[i].ativo)
 			continue;
 
 		int encontrou = 0;
-		for (j = 0; j < num_categorias; j++)
-		{
-			if (strcmp(categorias[j], produtos[i].categoria) == 0)
-			{
+		for (j = 0; j < num_categorias; j++) {
+			if (strcmp(categorias[j], produtos[i].categoria) == 0) {
 				encontrou = 1;
 				break;
 			}
 		}
 
-		if (!encontrou)
-		{
+		if (!encontrou) {
 			strcpy(categorias[num_categorias], produtos[i].categoria);
 			num_categorias++;
 		}
@@ -4084,37 +2954,26 @@ void exibir_produtos_restaurante_ui(struct Produto produtos[], int num_produtos)
 
 	/* Exibe produtos por categoria */
 	int cat;
-	for (cat = 0; cat < num_categorias; cat++)
-	{
+	for (cat = 0; cat < num_categorias; cat++) {
 		printf("   %s\n", categorias[cat]);
 
-		for (i = 0; i < num_produtos; i++)
-		{
-			if (produtos[i].ativo && strcmp(produtos[i].categoria, categorias[cat]) == 0)
-			{
-				printf("   "
-					"+--------------------------------------------------------------"
-					"---------+\n");
+		for (i = 0; i < num_produtos; i++) {
+			if (produtos[i].ativo && strcmp(produtos[i].categoria, categorias[cat]) == 0) {
+				printf("   +-----------------------------------------------------------------------+\n");
 				printf("   |  [%d]  %-57s       |\n", produtos[i].id, produtos[i].nome);
 				printf("   |       %-59s     |\n", produtos[i].descricao);
-				printf("   |       R$ %.2f  -  Estoque: %d                             "
-					"            |\n",
-					produtos[i].preco, produtos[i].quantidade);
-				printf("   "
-					"+--------------------------------------------------------------"
-					"---------+\n\n");
+				printf("   |       R$ %.2f  -  Estoque: %d                                         |\n",
+					   produtos[i].preco, produtos[i].quantidade);
+				printf("   +-----------------------------------------------------------------------+\n\n");
 			}
 		}
 	}
 }
 
-void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos[],
-				  int num_produtos)
-{
+void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos[], int num_produtos) {
 	clearScreen();
 
-	if (num_produtos == 0)
-	{
+	if (num_produtos == 0) {
 		printf("\nNenhum produto disponivel para adicionar.\n");
 		enter_ui();
 		return;
@@ -4124,29 +2983,24 @@ void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos
 	printf("|                    ADICIONAR AO CARRINHO                              |\n");
 	printf("+-----------------------------------------------------------------------+\n\n");
 
-	printf("Produtos disponíveis:\n\n");
+	printf("Produtos dispon�veis:\n\n");
 
-	/* Lista os produtos disponíveis */
+	/* Lista os produtos dispon�veis */
 	int i;
-	for (i = 0; i < num_produtos; i++)
-	{
-		if (produtos[i].ativo)
-		{
+	for (i = 0; i < num_produtos; i++) {
+		if (produtos[i].ativo) {
 			printf("   [ID: %d] %s\n", produtos[i].id, produtos[i].nome);
 			printf("   R$ %.2f | Estoque: %d\n", produtos[i].preco,
-				produtos[i].quantidade);
+				   produtos[i].quantidade);
 			printf("   %s\n", produtos[i].descricao);
-			printf("   "
-				"----------------------------------------------------------------------"
-				"\n");
+			printf("   ----------------------------------------------------------------------\n");
 		}
 	}
 
 	int id_produto, quantidade;
 
 	printf("\nDigite o ID do produto: ");
-	if (scanf("%d", &id_produto) != 1)
-	{
+	if (scanf("%d", &id_produto) != 1) {
 		limparBuffer();
 		printf("ID invalido!\n");
 		enter_ui();
@@ -4155,49 +3009,41 @@ void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos
 
 	/* Busca o produto */
 	int encontrado = -1;
-	for (i = 0; i < num_produtos; i++)
-	{
-		if (produtos[i].id == id_produto && produtos[i].ativo)
-		{
+	for (i = 0; i < num_produtos; i++) {
+		if (produtos[i].id == id_produto && produtos[i].ativo) {
 			encontrado = i;
 			break;
 		}
 	}
 
-	if (encontrado == -1)
-	{
+	if (encontrado == -1) {
 		printf("\nProduto nao encontrado ou indisponivel!\n");
 		enter_ui();
 		return;
 	}
 
 	printf("Digite a quantidade: ");
-	if (scanf("%d", &quantidade) != 1 || quantidade <= 0)
-	{
+	if (scanf("%d", &quantidade) != 1 || quantidade <= 0) {
 		limparBuffer();
 		printf("Quantidade invalida!\n");
 		enter_ui();
 		return;
 	}
 
-	if (quantidade > produtos[encontrado].quantidade)
-	{
+	if (quantidade > produtos[encontrado].quantidade) {
 		printf("\nEstoque insuficiente! Disponivel: %d\n", produtos[encontrado].quantidade);
 		enter_ui();
 		return;
 	}
 
 	/* Verifica se carrinho tem produtos de outro restaurante */
-	if (carrinho->num_itens > 0 &&
-	    strcmp(carrinho->nome_restaurante, "Restaurante Dinamico") != 0)
-	{
+	if (carrinho->num_itens > 0 && strcmp(carrinho->nome_restaurante, "Restaurante Dinamico") != 0) {
 		printf("\n[AVISO] Seu carrinho possui itens de %s.\n", carrinho->nome_restaurante);
 		printf("Deseja limpar o carrinho e adicionar deste restaurante? (s/n): ");
 		char resposta;
 		scanf(" %c", &resposta);
 		limparBuffer();
-		if (resposta != 's' && resposta != 'S')
-		{
+		if (resposta != 's' && resposta != 'S') {
 			printf("\nItem nao adicionado.\n");
 			enter_ui();
 			return;
@@ -4206,30 +3052,25 @@ void adicionar_ao_carrinho_ui(struct Carrinho *carrinho, struct Produto produtos
 	}
 
 	strcpy(carrinho->nome_restaurante, "Restaurante Dinamico");
-	adicionar_item_carrinho(carrinho, produtos[encontrado].id, produtos[encontrado].nome,
-				   produtos[encontrado].preco, quantidade);
+	adicionar_item_carrinho(carrinho, produtos[encontrado].id, produtos[encontrado].nome, produtos[encontrado].preco, quantidade);
 	enter_ui();
 }
 
-void visualizar_carrinho_ui(struct Carrinho *carrinho)
-{
+void visualizar_carrinho_ui(struct Carrinho *carrinho) {
 	clearScreen();
 	printf("+-----------------------------------------------------------------------+\n");
 	printf("|                         MEU CARRINHO                                  |\n");
 	printf("+-----------------------------------------------------------------------+\n\n");
 
-	if (carrinho->num_itens == 0)
-	{
+	if (carrinho->num_itens == 0) {
 		printf("Carrinho vazio.\n\n");
 		return;
 	}
 
 	int i;
-	for (i = 0; i < carrinho->num_itens; i++)
-	{
+	for (i = 0; i < carrinho->num_itens; i++) {
 		printf("[%d] %s\n", i + 1, carrinho->itens[i].nome_produto);
-		printf("    R$ %.2f x %d = R$ %.2f\n", carrinho->itens[i].preco_unitario,
-			carrinho->itens[i].quantidade, carrinho->itens[i].subtotal);
+		printf("    R$ %.2f x %d = R$ %.2f\n", carrinho->itens[i].preco_unitario, carrinho->itens[i].quantidade, carrinho->itens[i].subtotal);
 		printf("-----------------------------------------------------------------------\n");
 	}
 
@@ -4239,8 +3080,7 @@ void visualizar_carrinho_ui(struct Carrinho *carrinho)
 	printf("TOTAL: R$ %.2f\n\n", total);
 }
 
-int menu_carrinho()
-{
+int menu_carrinho() {
 	int opcao;
 	int cont = 0;
 
@@ -4249,16 +3089,13 @@ int menu_carrinho()
 	printf("[3] >> Limpar Carrinho\n\n");
 	printf("[4] >> Voltar\n\n");
 
-	do
-	{
-		if (cont > 0)
-		{
+	do {
+		if (cont > 0) {
 			printf("Opcao invalida! Tente novamente: ");
 		}
 
 		printf("Entre o numero desejado: ");
-		if (scanf("%d", &opcao) != 1)
-		{
+		if (scanf("%d", &opcao) != 1) {
 			limparBuffer();
 			opcao = 0;
 		}
@@ -4269,14 +3106,10 @@ int menu_carrinho()
 	return opcao;
 }
 
-void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
-			    struct Pedido pedidos[], int *num_pedidos, struct Produto produtos[],
-			    int num_produtos)
-{
-	(void) num_produtos; // Parametro usado indiretamente no loop de atualizacao de estoque
+void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente, struct Pedido pedidos[], int *num_pedidos, struct Produto produtos[], int num_produtos) {
+	(void)num_produtos; // Parametro usado indiretamente no loop de atualizacao de estoque
 
-	if (carrinho->num_itens == 0)
-	{
+	if (carrinho->num_itens == 0) {
 		printf("\nCarrinho vazio! Adicione produtos antes de finalizar.\n");
 		enter_ui();
 		return;
@@ -4292,8 +3125,7 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
 
 	// Confirmacao de endereco
 	printf("\nEndereco de entrega:\n");
-	printf("%s, %s, %d - CEP: %s\n\n", cliente->end.endereco, cliente->end.logradouro,
-		cliente->end.numero, cliente->end.cep);
+	printf("%s, %s, %d - CEP: %s\n\n", cliente->end.endereco, cliente->end.logradouro, cliente->end.numero, cliente->end.cep);
 
 	// Forma de pagamento
 	char forma_pagamento[20];
@@ -4305,30 +3137,32 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
 
 	int opcao_pag;
 	printf("Escolha: ");
-	if (scanf("%d", &opcao_pag) != 1)
-	{
+	if (scanf("%d", &opcao_pag) != 1) {
 		limparBuffer();
 		printf("Opcao invalida!\n");
 		enter_ui();
 		return;
 	}
 
-	switch (opcao_pag)
-	{
-	case 1:
-		strcpy(forma_pagamento, "Dinheiro");
-		break;
-	case 2:
-		strcpy(forma_pagamento, "Cartao Credito");
-		break;
-	case 3:
-		strcpy(forma_pagamento, "Cartao Debito");
-		break;
-	case 4:
-		strcpy(forma_pagamento, "PIX");
-		break;
-	default:
-		strcpy(forma_pagamento, "Nao informado");
+	switch (opcao_pag) {
+		case 1:
+			strcpy(forma_pagamento, "Dinheiro");
+			break;
+
+		case 2:
+			strcpy(forma_pagamento, "Cartao Credito");
+			break;
+
+		case 3:
+			strcpy(forma_pagamento, "Cartao Debito");
+			break;
+
+		case 4:
+			strcpy(forma_pagamento, "PIX");
+			break;
+
+		default:
+			strcpy(forma_pagamento, "Nao informado");
 	}
 
 	// Confirmacao final
@@ -4336,26 +3170,21 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
 	printf("\nConfirmar pedido? (s/n): ");
 	scanf(" %c", &confirmar);
 
-	if (confirmar == 's' || confirmar == 'S')
-	{
+	if (confirmar == 's' || confirmar == 'S') {
 		// Cria o pedido
 		struct Pedido novo_pedido;
 		novo_pedido.id = *num_pedidos + 1;
 		strcpy(novo_pedido.cpf_cliente, cliente->cpf);
 
 		/* Usa o nome do restaurante armazenado no carrinho */
-		if (strlen(carrinho->nome_restaurante) > 0)
-		{
+		if (strlen(carrinho->nome_restaurante) > 0) {
 			strcpy(novo_pedido.nome_restaurante, carrinho->nome_restaurante);
-		}
-		else
-		{
+		} else {
 			strcpy(novo_pedido.nome_restaurante, "Restaurante Dinamico");
 		}
 
 		int i;
-		for (i = 0; i < carrinho->num_itens; i++)
-		{
+		for (i = 0; i < carrinho->num_itens; i++) {
 			novo_pedido.itens[i] = carrinho->itens[i];
 		}
 
@@ -4368,8 +3197,7 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
 		/* Gera data/hora atual */
 		time_t agora = time(NULL);
 		struct tm *tempo_info = localtime(&agora);
-		strftime(novo_pedido.data_hora, sizeof(novo_pedido.data_hora), "%d/%m/%Y %H:%M",
-			  tempo_info);
+		strftime(novo_pedido.data_hora, sizeof(novo_pedido.data_hora), "%d/%m/%Y %H:%M", tempo_info);
 
 		novo_pedido.visualizacoes = 0;
 		novo_pedido.timestamp_criacao = agora;
@@ -4377,24 +3205,19 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
 		pedidos[*num_pedidos] = novo_pedido;
 		(*num_pedidos)++;
 
-		printf("\n✓ Pedido realizado com sucesso!\n");
+		printf("\n? Pedido realizado com sucesso!\n");
 		printf("Numero do pedido: #%d\n", novo_pedido.id);
 		printf("Status: %s\n\n", novo_pedido.status);
 
-		/* Atualiza estoque dos produtos apenas do restaurante dinâmico */
-		if (strcmp(carrinho->nome_restaurante, "Restaurante Dinamico") == 0)
-		{
-			for (i = 0; i < carrinho->num_itens; i++)
-			{
+		/* Atualiza estoque dos produtos apenas do restaurante din�mico */
+		if (strcmp(carrinho->nome_restaurante, "Restaurante Dinamico") == 0) {
+			for (i = 0; i < carrinho->num_itens; i++) {
 				int id_produto = carrinho->itens[i].id_produto;
 				int qtd_comprada = carrinho->itens[i].quantidade;
 
 				int j;
-				for (j = 0; j < num_produtos; j++)
-				{
-					if (produtos[j].id == id_produto &&
-					    produtos[j].quantidade >= qtd_comprada)
-					{
+				for (j = 0; j < num_produtos; j++) {
+					if (produtos[j].id == id_produto && produtos[j].quantidade >= qtd_comprada) {
 						produtos[j].quantidade -= qtd_comprada;
 						break;
 					}
@@ -4403,9 +3226,7 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
 		}
 
 		limpar_carrinho(carrinho);
-	}
-	else
-	{
+	} else {
 		printf("\nPedido cancelado.\n");
 	}
 
@@ -4414,13 +3235,11 @@ void finalizar_compra_ui(struct Carrinho *carrinho, struct Cliente *cliente,
 
 // ==================== FUNCOES DE FAVORITOS ====================
 
-void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[])
-{
+void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[]) {
 	int i;
 	int opcao;
 
-	if (cliente->num_favoritos >= 10)
-	{
+	if (cliente->num_favoritos >= 10) {
 		printf("\nLimite de favoritos atingido!\n");
 		enter_ui();
 		return;
@@ -4435,8 +3254,7 @@ void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[])
 	printf("[3] Domino's Pizza\n");
 	printf("[4] %s\n\n", cliente->rest.nome_restaurante);
 	printf("Escolha: ");
-	if (scanf("%d", &opcao) != 1 || opcao < 1 || opcao > 4)
-	{
+	if (scanf("%d", &opcao) != 1 || opcao < 1 || opcao > 4) {
 		limparBuffer();
 		printf("Opcao invalida!\n");
 		enter_ui();
@@ -4444,10 +3262,8 @@ void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[])
 	}
 
 	/* Verifica se ja esta nos favoritos */
-	for (i = 0; i < cliente->num_favoritos; i++)
-	{
-		if (cliente->restaurantes_favoritos[i] == opcao)
-		{
+	for (i = 0; i < cliente->num_favoritos; i++) {
+		if (cliente->restaurantes_favoritos[i] == opcao) {
 			printf("\nRestaurante ja esta nos favoritos!\n");
 			enter_ui();
 			return;
@@ -4457,30 +3273,27 @@ void adicionar_favorito_ui(struct Cliente *cliente, struct Produto produtos[])
 	cliente->restaurantes_favoritos[cliente->num_favoritos] = opcao;
 	cliente->num_favoritos++;
 
-	printf("\n✓ Restaurante adicionado aos favoritos!\n");
+	printf("\n? Restaurante adicionado aos favoritos!\n");
 	enter_ui();
 }
 
-void listar_favoritos_ui(struct Cliente *cliente, struct Produto produtos[])
-{
+void listar_favoritos_ui(struct Cliente *cliente, struct Produto produtos[]) {
 	int i;
-	(void) produtos; /* Parametro nao utilizado */
+	(void)produtos; /* Parametro nao utilizado */
 
 	clearScreen();
 	printf("+-----------------------------------------------------------------------+\n");
 	printf("|                              FAVORITOS                                |\n");
 	printf("+-----------------------------------------------------------------------+\n\n");
 
-	if (cliente->num_favoritos == 0)
-	{
+	if (cliente->num_favoritos == 0) {
 		printf("Nenhum item favorito ainda.\n\n");
 		enter_ui();
 		return;
 	}
 
 	char *nomes[] = {"", "Mc Donald`s", "Coco Bambu", "Domino's Pizza", "Restaurante Dinamico"};
-	for (i = 0; i < cliente->num_favoritos; i++)
-	{
+	for (i = 0; i < cliente->num_favoritos; i++) {
 		int id = cliente->restaurantes_favoritos[i];
 		printf("[%d] %s\n", i + 1, nomes[id]);
 	}
@@ -4491,20 +3304,16 @@ void listar_favoritos_ui(struct Cliente *cliente, struct Produto produtos[])
 
 // ==================== FUNCOES DE FAVORITOS DE PRODUTOS ====================
 
-void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produtos[],
-					int num_produtos)
-{
+void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos) {
 	clearScreen();
 
-	if (num_produtos == 0)
-	{
+	if (num_produtos == 0) {
 		printf("\nNenhum produto disponivel.\n");
 		enter_ui();
 		return;
 	}
 
-	if (cliente->num_produtos_favoritos >= 50)
-	{
+	if (cliente->num_produtos_favoritos >= 50) {
 		printf("\nLimite de produtos favoritos atingido!\n");
 		enter_ui();
 		return;
@@ -4514,60 +3323,50 @@ void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produ
 	printf("|                    ADICIONAR PRODUTO AOS FAVORITOS                    |\n");
 	printf("+-----------------------------------------------------------------------+\n\n");
 
-	printf("Produtos disponíveis:\n\n");
+	printf("Produtos dispon�veis:\n\n");
 
 	int i;
-	for (i = 0; i < num_produtos; i++)
-	{
-		if (produtos[i].ativo)
-		{
+	for (i = 0; i < num_produtos; i++) {
+		if (produtos[i].ativo) {
 			printf("   [ID: %d] %s\n", produtos[i].id, produtos[i].nome);
 			printf("   R$ %.2f - %s\n", produtos[i].preco, produtos[i].descricao);
 			printf("   "
-				"----------------------------------------------------------------------"
-				"\n");
+				   "----------------------------------------------------------------------\n");
 		}
 	}
 
 	int id_produto;
 	printf("\n[0] Voltar\n\n");
 	printf("Digite o ID do produto para adicionar aos favoritos (ou 0 para voltar): ");
-	if (scanf("%d", &id_produto) != 1)
-	{
+	if (scanf("%d", &id_produto) != 1) {
 		limparBuffer();
 		printf("ID invalido!\n");
 		enter_ui();
 		return;
 	}
 
-	if (id_produto == 0)
-	{
+	if (id_produto == 0) {
 		return;
 	}
 
 	/* Busca o produto */
 	int encontrado = -1;
-	for (i = 0; i < num_produtos; i++)
-	{
-		if (produtos[i].id == id_produto && produtos[i].ativo)
-		{
+	for (i = 0; i < num_produtos; i++) {
+		if (produtos[i].id == id_produto && produtos[i].ativo) {
 			encontrado = i;
 			break;
 		}
 	}
 
-	if (encontrado == -1)
-	{
+	if (encontrado == -1) {
 		printf("\nProduto nao encontrado ou indisponivel!\n");
 		enter_ui();
 		return;
 	}
 
 	/* Verifica se ja esta nos favoritos */
-	for (i = 0; i < cliente->num_produtos_favoritos; i++)
-	{
-		if (cliente->produtos_favoritos[i] == id_produto)
-		{
+	for (i = 0; i < cliente->num_produtos_favoritos; i++) {
+		if (cliente->produtos_favoritos[i] == id_produto) {
 			printf("\nProduto ja esta nos favoritos!\n");
 			enter_ui();
 			return;
@@ -4581,16 +3380,13 @@ void adicionar_produto_favorito_ui(struct Cliente *cliente, struct Produto produ
 	enter_ui();
 }
 
-void listar_produtos_favoritos_ui(struct Cliente *cliente, struct Produto produtos[],
-				      int num_produtos)
-{
+void listar_produtos_favoritos_ui(struct Cliente *cliente, struct Produto produtos[], int num_produtos) {
 	clearScreen();
 	printf("+-----------------------------------------------------------------------+\n");
 	printf("|                        PRODUTOS FAVORITOS                             |\n");
 	printf("+-----------------------------------------------------------------------+\n\n");
 
-	if (cliente->num_produtos_favoritos == 0)
-	{
+	if (cliente->num_produtos_favoritos == 0) {
 		printf("Nenhum produto favorito ainda.\n\n");
 		enter_ui();
 		return;
@@ -4599,21 +3395,16 @@ void listar_produtos_favoritos_ui(struct Cliente *cliente, struct Produto produt
 	printf("Seus produtos favoritos:\n\n");
 
 	int i, j;
-	for (i = 0; i < cliente->num_produtos_favoritos; i++)
-	{
+	for (i = 0; i < cliente->num_produtos_favoritos; i++) {
 		int id_produto = cliente->produtos_favoritos[i];
 
 		/* Busca o produto no array */
-		for (j = 0; j < num_produtos; j++)
-		{
-			if (produtos[j].id == id_produto)
-			{
+		for (j = 0; j < num_produtos; j++) {
+			if (produtos[j].id == id_produto) {
 				printf("   [%d] %s\n", i + 1, produtos[j].nome);
 				printf("   R$ %.2f - %s\n", produtos[j].preco, produtos[j].descricao);
 				printf("   Estoque: %d unidades\n", produtos[j].quantidade);
-				printf("   "
-					"---------------------------------------------------------------"
-					"-------\n");
+				printf("   ----------------------------------------------------------------------\n");
 				break;
 			}
 		}
