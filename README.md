@@ -4,7 +4,7 @@
 
 ### Clone do iFood com Interface de Texto (TUI) em C
 
-[![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)](https://github.com/KaioVeras/IfoodTUI)
+[![Status](https://img.shields.io/badge/status-Completo-green)]((https://github.com/KaioVeras/IfoodTUI))
 [![Language](https://img.shields.io/badge/language-C-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
